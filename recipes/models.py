@@ -13,9 +13,12 @@ class Cuisine(models.Model):
     def __str__(self):
         return self.country
 
+
 class Cook(AbstractUser):
     bio = models.CharField(max_length=255, blank=True)
-    favorites = models.ManyToManyField("Recipe", related_name="favorited_by", blank=True)
+    favorites = models.ManyToManyField(
+        "Recipe", related_name="favorited_by", blank=True
+    )
 
     class Meta:
         ordering = ("username",)
@@ -37,8 +40,12 @@ class Recipe(models.Model):
     ingredients = models.TextField()
     instructions = models.TextField()
     cooking_time = models.PositiveIntegerField(help_text="у хвилинах")
-    cuisine = models.ForeignKey(Cuisine, on_delete=models.CASCADE, related_name="recipes")
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="recipes")
+    cuisine = models.ForeignKey(
+        Cuisine, on_delete=models.CASCADE, related_name="recipes"
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="recipes"
+    )
     tag = models.ManyToManyField(Tag, related_name="recipes", blank=True)
     image = models.ImageField(upload_to="recipes/media")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -47,18 +54,25 @@ class Recipe(models.Model):
         ordering = ("name",)
 
     def __str__(self):
-        return f"{self.name} - {self.cuisine} кухня, час приготування {self.cooking_time}"
+        return (
+            f"{self.name} - {self.cuisine} кухня, час приготування {self.cooking_time}"
+        )
 
 
 class Rating(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="ratings")
-    cook = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="ratings")
-    score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    cook = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="ratings"
+    )
+    score = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     comment = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        constraints = models.UniqueConstraint(fields=("recipe", "cook"), name="unique_recipe_cook_raiting")
-    
-
-    
+        constraints = [
+            models.UniqueConstraint(
+                fields=["recipe", "cook"], name="unique_recipe_cook_rating"
+        )
+    ]
