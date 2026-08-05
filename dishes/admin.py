@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from recipes.models import Recipe, Cook, Cuisine, Tag, Rating
+from dishes.models import Recipe, Cook, Cuisine, Tag, Rating
 
 
 @admin.register(Cook)
@@ -20,9 +20,9 @@ class CookAdmin(UserAdmin):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ("name", "cuisine", "author", "cooking_time", "created_at")
-    list_filter = ("cuisine", "tag")
+    list_filter = ("cuisine", "tags")
     search_fields = ("name",)
-    filter_horizontal = ("tag",)
+    filter_horizontal = ("tags",)
 
 
 @admin.register(Cuisine)

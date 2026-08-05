@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from recipes.models import Recipe, Cook, Cuisine, Tag
+from dishes.models import Recipe, Cook, Cuisine, Tag
 
 
 def index_cookbook(request):

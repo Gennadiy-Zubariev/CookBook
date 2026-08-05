@@ -28,7 +28,7 @@ class Cook(AbstractUser):
 
 
 class Tag(models.Model):
-    name = models.TextField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
@@ -44,10 +44,12 @@ class Recipe(models.Model):
         Cuisine, on_delete=models.CASCADE, related_name="recipes"
     )
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="recipes"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="authored_recipes",
     )
-    tag = models.ManyToManyField(Tag, related_name="recipes", blank=True)
-    image = models.ImageField(upload_to="recipes/media")
+    tags = models.ManyToManyField(Tag, related_name="recipes", blank=True)
+    image = models.ImageField(upload_to="dishes/media", null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -74,5 +76,8 @@ class Rating(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["recipe", "cook"], name="unique_recipe_cook_rating"
-        )
-    ]
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.recipe} {self.score}"
