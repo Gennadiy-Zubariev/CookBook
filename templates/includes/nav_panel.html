@@ -1,10 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% load static %}
+<div class="topbar">
+  <div class="container">
+    <div class="socials">
+      <a href="#" aria-label="Facebook">Facebook</a>
+      <a href="#" aria-label="Instagram">Instagram</a>
+      <a href="#" aria-label="YouTube">YouTube</a>
+    </div>
+    <div>
+      {% if user.is_authenticated %}
+        Привіт, {{ user.first_name|default:user.username }}
+      {% else %}
+        <a href="{% url 'login' %}">Увійти</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
 
-</body>
-</html>
+<nav class="navbar">
+  <div class="container">
+    <a href="{% url 'index' %}" class="logo">Cookbook</a>
+
+    <ul class="nav-links">
+      <li><a href="{% url 'index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">Головна</a></li>
+      <li><a href="{% url 'dishes:recipe-list' %}" class="{% if request.resolver_match.url_name == 'recipe-list' %}active{% endif %}">Усі рецепти</a></li>
+      <li><a href="{% url 'dishes:cuisine-list' %}">Кухні світу</a></li>
+      <li><a href="{% url 'dishes:tag-list' %}">Теги</a></li>
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'dishes:recipe-create' %}">Додати рецепт</a></li>
+      {% endif %}
+    </ul>
+
+    <div class="nav-actions">
+      <a href="{% url 'dishes:recipe-list' %}" class="nav-icon-btn" aria-label="Пошук рецептів">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </a>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'dishes:favorite-list' %}" class="nav-icon-btn" aria-label="Обрані рецепти">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          {% if user.favorites.count %}<span class="badge">{{ user.favorites.count }}</span>{% endif %}
+        </a>
+        <a href="{% url 'logout' %}" class="btn btn-outline">Вийти</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="nav-icon-btn" aria-label="Профіль">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</nav>

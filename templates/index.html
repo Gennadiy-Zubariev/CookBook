@@ -1,10 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Resipes</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
 
-</body>
-</html>
+{% block title %}Головна{% endblock %}
+
+{% block content %}
+<section style="display:grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: stretch; margin-bottom: 64px;">
+  <div class="card" style="overflow:hidden;">
+    {% if featured_recipe.image %}
+      <img src="{{ featured_recipe.image.url }}" alt="{{ featured_recipe.name }}" style="width:100%; height:100%; object-fit:cover;">
+    {% endif %}
+  </div>
+
+  <div style="display:flex; flex-direction:column; justify-content:center;">
+    <span class="eyebrow">Рецепт дня</span>
+    <h1 style="font-size: 32px; margin-top: 8px;">{{ featured_recipe.name }}</h1>
+    <p style="color: var(--ink-soft); font-size: 13px;">
+      ⏱ {{ featured_recipe.cooking_time }} хв &nbsp;·&nbsp; {{ featured_recipe.cuisine.name }}
+    </p>
+    <p style="margin-top: 12px;">{{ featured_recipe.description|truncatewords:28 }}</p>
+    <div style="display:flex; align-items:center; gap:10px; margin-top: 24px; padding-top:16px; border-top:1px solid var(--line);">
+      <div>
+        <strong style="font-size:13px;">{{ featured_recipe.author.get_full_name|default:featured_recipe.author.username }}</strong><br>
+        <span style="font-size:12px; color:var(--ink-soft);">{{ featured_recipe.created_at|date:"d.m.Y" }}</span>
+      </div>
+    </div>
+    <a href="{% url 'dishes:recipe-detail' featured_recipe.pk %}" class="btn btn-primary" style="margin-top:20px; width:fit-content;">Переглянути рецепт</a>
+  </div>
+</section>
+
+<section>
+  <h2 class="eyebrow" style="margin-bottom: 20px;">Популярні рецепти</h2>
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
+    {% for recipe in popular_recipes %}
+      <a href="{% url 'dishes:recipe-detail' recipe.pk %}" class="card" style="overflow:hidden;">
+        {% if recipe.image %}
+          <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" style="height:160px; width:100%; object-fit:cover;">
+        {% endif %}
+        <div style="padding: 16px;">
+          <span class="eyebrow">{{ recipe.cuisine.name }}</span>
+          <h3 style="font-size:17px; margin-top:6px;">{{ recipe.name }}</h3>
+        </div>
+      </a>
+    {% empty %}
+      <p style="color:var(--ink-soft);">Поки що немає рецептів.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+  <h1>Cook List<a class="btn btn-primary" href="{% url "dishes:cook-create" %}">+</a></h1>
+  {% if cook_list %}
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Full Name</th>
+        <th>Username</th>
+        <th>Pseudonim</th>
+      </tr>
+      {% for cook in cook_list %}
+        <tr>
+          <td>
+            <a href="{% url "catalog:author-detail" author.pk %}">{{ author.id }}</a>
+          </td>
+          <td>
+            {{ cook.first_name }} {{ cook.last_name }}
+          </td>
+          <td>
+            {{ cook.username }}
+          </td>
+          <td>
+            {{ cook.bio|default_if_none:"" }}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+{% endblock %}

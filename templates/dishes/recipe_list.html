@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+<h1>Recipe List<a class="btn btn-primary" href="{% url 'dishes:recipe-create' %}">+</a></h1>
+{% if recipe_list %}
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Full Name</th>
+    <th>Username</th>
+    <th>Pseudonim</th>
+  </tr>
+  {% for recipe in recipe_list %}
+  <tr>
+    <td>
+      <a href="{% url 'dishes:recipe-detail' recipe.pk %}">{{ recipe.id }}</a>
+    </td>
+    <td>
+      {{ recipe.name }}
+    </td>
+    <td>
+      {{ recipe.description }}
+    </td>
+    <td>
+      {{ recipe.author }}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}
