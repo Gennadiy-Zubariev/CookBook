@@ -33,9 +33,35 @@ class CuisineDeleteView(LoginRequiredMixin, generic.DeleteView):
 class RecipeListView(LoginRequiredMixin, generic.ListView):
     model = Recipe
     # paginate_by = 4
-    queryset = Recipe.objects.select_related("cuisine", "author").prefetch_related(
-        "tags", "favorited_by"
-    )
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total_count"] = self.get_queryset().count()
+        context["cuisines"] = Cuisine.objects.all()
+        context["tags"] = Tag.objects.all()
+        return context
+
+    def get_queryset(self):
+        queryset = (
+            Recipe.objects
+            .select_related("cuisine", "author")
+            .prefetch_related("tags", "favorited_by")
+            .annotate(avg_score=Avg("ratings__score"))
+        )
+        search_param = self.request.GET.get("search_param")
+        if search_param:
+            queryset = queryset.filter(name__icontains=search_param)
+        cuisine_id = self.request.GET.get("cuisine_search_param")
+        if cuisine_id:
+            queryset = queryset.filter(cuisine_id=cuisine_id)
+        tag_id = self.request.GET.get("tag_search_param")
+        if tag_id:
+            queryset = queryset.filter(tags__id=tag_id)
+
+        return queryset
+            
+
 
 
 class RecipeCreateView(LoginRequiredMixin, generic.CreateView):

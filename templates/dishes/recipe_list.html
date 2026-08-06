@@ -1,36 +1,104 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}Усі рецепти{% endblock %}
 
 {% block content %}
-<h1>Recipe List</h1>
+
+<header style="margin-bottom: 40px;">
+    <h1 style="font-size: 42px; margin-top: 8px;">Усі рецепти</h1>
+    <p style="color: var(--ink-soft); margin-top: 8px;">
+        Кількість рецептів - {{ total_count }}
+    </p>
+</header>
+
+<form method="get" style="display: flex; gap: 12px; margin-bottom: 32px; padding: 20px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);">
+    <input
+        type="text"
+        name="search_param"
+        value="{{ request.GET.search_param }}"
+        placeholder="Пошук за назвою..."
+        style="flex: 1; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius); font-family: inherit; font-size: 14px; background: var(--cream);"
+    >
+
+    <select name="cuisine_search_param" style="padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius); font-family: inherit; font-size: 14px; background: var(--cream);">
+        <option value="">Всі кухні</option>
+        {% for cuisine in cuisines %}
+          <option value="{{ cuisine.pk }}">{{ cuisine.country }}</option>
+        {% endfor %}
+    </select>
+    <select name="tag_search_param" style="padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius); font-family: inherit; font-size: 14px; background: var(--cream);">
+        <option value="">Всі теги</option>
+        {% for tag in tags %}
+          <option value="{{ tag.pk }}">{{ tag.name }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-primary">Шукати</button>
+
+    {% if request.GET.search_param or request.GET.cuisine_search_param or request.GET.tag_search_param %}
+        <a href="{% url 'dishes:recipe-list' %}" class="btn btn-outline">Скинути</a>
+    {% endif %}
+</form>
+
 {% if recipe_list %}
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Cooking time</th>
-    <th>Author</th>
-  </tr>
-  {% for recipe in recipe_list %}
-  <tr>
-    <td>
-      <a href="{% url 'dishes:recipe-detail' recipe.pk %}">{{ recipe.name }}</a>
-    </td>
-    <td>
-      {{ recipe.description }}
-    </td>
-    <td>
-      {{ recipe.cooking_time }}
-    </td>
-    <td>
-      <a href="{% url 'dishes:cook-detail' recipe.author.pk %}">{{ recipe.author }}</a>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-      {% if user.is_authenticated %}
-        <a href="{% url 'dishes:recipe-create' %}" class="btn btn-primary" style="margin-top:20px; width:fit-content;">Додати рецепт</a>
-      {% endif %}
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-bottom: 48px;">
+        {% for recipe in recipe_list %}
+            <a href="{% url 'dishes:recipe-detail' recipe.pk %}" class="card" style="overflow: hidden; display: flex; flex-direction: column; transition: transform .15s ease;">
+
+                <div style="position: relative; padding-top: 66%; background: var(--line);">
+                    {% if recipe.image %}
+                        <img
+                            src="{{ recipe.image.url }}"
+                            alt="{{ recipe.name }}"
+                            style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"
+                        >
+                    {% endif %}
+
+                    {% if user.is_authenticated and recipe in user.favorites.all %}
+                        <span style="position: absolute; top: 12px; right: 12px; background: var(--clay); color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;">
+                            ♥ В обраному
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div style="padding: 18px 20px 20px; display: flex; flex-direction: column; flex-grow: 1;">
+                    <span class="eyebrow">{{ recipe.cuisine.country }}</span>
+                    <h3 style="font-size: 18px; margin-top: 6px; margin-bottom: 10px;">{{ recipe.name }}</h3>
+                    <p style="font-size: 13px; color: var(--ink-soft); margin: 0 0 14px; flex-grow: 1;">
+                      {% for tag in recipe.tags.all %}
+                        #{{ tag }}
+                      {% endfor %}
+                    </p>
+
+                    <p style="font-size: 13px; color: var(--ink-soft); margin: 0 0 14px; flex-grow: 1;">
+                        {{ recipe.description|truncatewords:14 }}
+                    </p>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--ink-soft); padding-top: 12px; border-top: 1px solid var(--line);">
+                        <span>⏱ {{ recipe.cooking_time }} хв</span>
+                        {% if recipe.avg_score %}
+                            <span style="color: var(--clay); font-weight: 500;">
+                                ★ {{ recipe.avg_score|floatformat:1 }}
+                            </span>
+                        {% endif %}
+                        <span>{{ recipe.author.username }}</span>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        {% include "includes/pagination.html" %}
+    {% endif %}
+
+{% else %}
+    <div style="text-align: center; padding: 60px 20px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);">
+        <p style="color: var(--ink-soft); font-size: 16px; margin: 0 0 16px;">
+            Нічого не знайдено 🍽
+        </p>
+    </div>
 {% endif %}
+
 {% endblock %}
