@@ -25,9 +25,6 @@
       <li><a href="{% url 'dishes:recipe-list' %}" class="{% if request.resolver_match.url_name == 'recipe-list' %}active{% endif %}">Усі рецепти</a></li>
       <li><a href="{% url 'dishes:cuisine-list' %}">Кухні світу</a></li>
       <li><a href="{% url 'dishes:tag-list' %}">Теги</a></li>
-      {% if user.is_authenticated %}
-        <li><a href="{% url 'dishes:recipe-create' %}">Додати рецепт</a></li>
-      {% endif %}
     </ul>
 
     <div class="nav-actions">

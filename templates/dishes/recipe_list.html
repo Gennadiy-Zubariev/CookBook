@@ -3,31 +3,34 @@
 
 
 {% block content %}
-<h1>Recipe List<a class="btn btn-primary" href="{% url 'dishes:recipe-create' %}">+</a></h1>
+<h1>Recipe List</h1>
 {% if recipe_list %}
 <table>
   <tr>
-    <th>ID</th>
-    <th>Full Name</th>
-    <th>Username</th>
-    <th>Pseudonim</th>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Cooking time</th>
+    <th>Author</th>
   </tr>
   {% for recipe in recipe_list %}
   <tr>
     <td>
-      <a href="{% url 'dishes:recipe-detail' recipe.pk %}">{{ recipe.id }}</a>
-    </td>
-    <td>
-      {{ recipe.name }}
+      <a href="{% url 'dishes:recipe-detail' recipe.pk %}">{{ recipe.name }}</a>
     </td>
     <td>
       {{ recipe.description }}
     </td>
     <td>
-      {{ recipe.author }}
+      {{ recipe.cooking_time }}
+    </td>
+    <td>
+      <a href="{% url 'dishes:cook-detail' recipe.author.pk %}">{{ recipe.author }}</a>
     </td>
   </tr>
   {% endfor %}
 </table>
+      {% if user.is_authenticated %}
+        <a href="{% url 'dishes:recipe-create' %}" class="btn btn-primary" style="margin-top:20px; width:fit-content;">Додати рецепт</a>
+      {% endif %}
 {% endif %}
 {% endblock %}

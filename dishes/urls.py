@@ -25,25 +25,13 @@ from dishes.views import (
 app_name = "dishes"
 
 urlpatterns = [
+    path("cuisines/", CuisineListView.as_view(), name="cuisine-list"),
+    path("cuisine/create/", CuisineCreateView.as_view(), name="cuisine-create"),
     path(
-        "cuisines/",
-        CuisineListView.as_view(),
-        name="cuisine-list",
+        "cuisine/<int:pk>/update/", CuisineUpdateView.as_view(), name="cuisine-update"
     ),
     path(
-        "cuisine/create/",
-        CuisineCreateView.as_view(),
-        name="cuisine-create",
-    ),
-    path(
-        "cuisine/<int:pk>/update/",
-        CuisineUpdateView.as_view(),
-        name="cuisine-update",
-    ),
-    path(
-        "cuisine/<int:pk>/delete/",
-        CuisineDeleteView.as_view(),
-        name="cuisine-delete",
+        "cuisine/<int:pk>/delete/", CuisineDeleteView.as_view(), name="cuisine-delete"
     ),
     path("recipes/", RecipeListView.as_view(), name="recipe-list"),
     path("recipe/create/", RecipeCreateView.as_view(), name="recipe-create"),

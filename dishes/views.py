@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models.aggregates import Avg
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
@@ -31,7 +32,7 @@ class CuisineDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class RecipeListView(LoginRequiredMixin, generic.ListView):
     model = Recipe
-    paginate_by = 4
+    # paginate_by = 4
     queryset = Recipe.objects.select_related("cuisine", "author").prefetch_related(
         "tags", "favorited_by"
     )
@@ -54,8 +55,18 @@ class RecipeUpdateView(LoginRequiredMixin, generic.UpdateView):
 class RecipeDetailView(LoginRequiredMixin, generic.DetailView):
     model = Recipe
     queryset = Recipe.objects.select_related("cuisine", "author").prefetch_related(
-        "tag", "ratings", "favorited_by"
+        "tags", "ratings", "favorited_by"
     )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipe = self.object
+        context["avg_score"] = recipe.ratings.aggregate(Avg("score"))["score__avg"]
+        context["can_rate"] = (
+            self.request.user.is_authenticated
+            and not recipe.ratings.filter(cook=self.request.user).exists()
+        )
+        return context
 
 
 class RecipeDeleteView(LoginRequiredMixin, generic.DeleteView):
