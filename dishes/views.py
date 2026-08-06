@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.aggregates import Avg
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
@@ -64,15 +65,35 @@ class RecipeListView(LoginRequiredMixin, generic.ListView):
 
 
 
-class RecipeCreateView(LoginRequiredMixin, generic.CreateView):
+class RecipeCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
     model = Recipe
-    # form_class = RecipeForm
+    fields = [
+        "name",
+        "description",
+        "ingredients",
+        "instructions",
+        "cooking_time",
+        "cuisine",
+        "tags",
+        "image",
+    ]
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    success_message = "Рецепт %(name)s створено"
     success_url = reverse_lazy("dishes:recipe-list")
 
 
-class RecipeUpdateView(LoginRequiredMixin, generic.UpdateView):
+class RecipeUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
     model = Recipe
-    # form_class = RecipeForm
+    fields = ["name", "description", "ingredients", "instructions",
+              "cooking_time", "cuisine", "tags", "image"]
+    success_message = "Рецепт %(name)s змінено"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(author=self.request.user)
 
     def get_success_url(self):
         return reverse("dishes:recipe-detail", kwargs={"pk": self.object.pk})

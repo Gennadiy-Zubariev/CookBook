@@ -10,6 +10,7 @@
     <p style="color: var(--ink-soft); margin-top: 8px;">
         Кількість рецептів - {{ total_count }}
     </p>
+    <a href="{% url 'dishes:recipe-create' %}" class="btn btn-primary">Створити рецепт</a>
 </header>
 
 <form method="get" style="display: flex; gap: 12px; margin-bottom: 32px; padding: 20px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);">

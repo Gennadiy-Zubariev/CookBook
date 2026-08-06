@@ -160,8 +160,10 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius);
   font-size: 14px;
   font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
   border: 1px solid transparent;
+  line-height: 1.4;
 }
 .btn-primary {
   background: var(--moss);
@@ -225,4 +227,62 @@ img { max-width: 100%; display: block; }
 @media (max-width: 860px) {
   .nav-links { display: none; }
   .navbar .container { height: 68px; }
+}
+
+.form-field {
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-field input[type="text"],
+.form-field input[type="number"],
+.form-field input[type="email"],
+.form-field input[type="password"],
+.form-field textarea,
+.form-field select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.4;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+    outline: none;
+    border-color: var(--moss);
+    background: var(--paper);
+}
+
+.form-field textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-field .helptext {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+}
+
+.form-field .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: var(--clay);
 }

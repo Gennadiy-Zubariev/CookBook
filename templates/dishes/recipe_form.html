@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if object %}Редагувати{% else %}Новий{% endif %} рецепт
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 720px; margin: 0 auto;">
+
+    <header style="margin-bottom: 32px;">
+        <span class="eyebrow">
+            {% if object %}Редагування{% else %}Новий рецепт{% endif %}
+        </span>
+        <h1 style="font-size: 36px; margin-top: 8px;">
+            {% if object %}{{ object.name }}{% else %}Створити рецепт{% endif %}
+        </h1>
+    </header>
+
+    <form method="post" enctype="multipart/form-data" class="recipe-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div style="padding: 12px 16px; background: #fde8e0; border: 1px solid var(--clay); border-radius: var(--radius); color: var(--clay); margin-bottom: 20px;">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="form-field">
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                    {% if field.field.required %}<span style="color: var(--clay);">*</span>{% endif %}
+                </label>
+
+                {{ field }}
+
+                {% if field.help_text %}
+                    <div class="helptext">{{ field.help_text }}</div>
+                {% endif %}
+
+                {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div style="display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line);">
+            <button type="submit" class="btn btn-primary">
+                {% if object %}Зберегти зміни{% else %}Створити рецепт{% endif %}
+            </button>
+            <a href="{% if object %}{% url 'dishes:recipe-detail' object.pk %}{% else %}{% url 'dishes:recipe-list' %}{% endif %}" class="btn btn-outline">
+                Скасувати
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
