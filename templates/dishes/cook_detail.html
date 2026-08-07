@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ cook.get_full_name|default:cook.username }}{% endblock %}
+
+{% block content %}
+<article style="max-width: 900px; margin: 0 auto;">
+
+    <header style="display: flex; align-items: center; gap: 24px; margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--line);">
+        <div style="width: 88px; height: 88px; border-radius: 50%; background: var(--moss); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 32px; font-weight: 500; flex-shrink: 0;">
+            {{ cook.first_name|slice:":1"|default:cook.username|slice:":1"|upper }}
+        </div>
+
+        <div style="flex-grow: 1;">
+            <span class="eyebrow">Кухар</span>
+            <h1 style="font-size: 32px; margin-top: 6px; margin-bottom: 4px;">
+                {{ cook.get_full_name|default:cook.username }}
+            </h1>
+            <p style="color: var(--ink-soft); font-size: 14px; margin: 0;">
+                @{{ cook.username }}
+                {% if cook.date_joined %}
+                    · На кухні з {{ cook.date_joined|date:"F Y" }}
+                {% endif %}
+            </p>
+            {% if cook.bio %}
+                <p style="margin-top: 12px; font-size: 15px; color: var(--ink);">{{ cook.bio }}</p>
+            {% endif %}
+        </div>
+    </header>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px;">
+        <div class="card" style="padding: 20px; text-align: center;">
+            <div style="font-family: 'Fraunces', serif; font-size: 28px; font-weight: 500; color: var(--ink);">
+                {{ recipes_count }}
+            </div>
+            <div style="font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em;">
+                {% if recipes_count == 1 %}рецепт{% elif recipes_count >= 2 and recipes_count <= 4 %}рецепти{% else %}рецептів{% endif %}
+            </div>
+        </div>
+
+        <div class="card" style="padding: 20px; text-align: center;">
+            <div style="font-family: 'Fraunces', serif; font-size: 28px; font-weight: 500; color: var(--ink);">
+                {{ ratings_given }}
+            </div>
+            <div style="font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em;">
+                {% if ratings_given == 1 %}відгук{% elif ratings_given >= 2 and ratings_given <= 4 %}відгуки{% else %}відгуків{% endif %}
+            </div>
+        </div>
+
+        <div class="card" style="padding: 20px; text-align: center;">
+            <div style="font-family: 'Fraunces', serif; font-size: 28px; font-weight: 500; color: var(--clay);">
+                {{ favorites_count }}
+            </div>
+            <div style="font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em;">
+                в обраному
+            </div>
+        </div>
+    </div>
+
+    <section>
+        <h2 style="font-size: 22px; margin-bottom: 24px;">
+            Рецепти
+            {% if recipes_count %}
+                <span style="font-size: 14px; color: var(--ink-soft); font-weight: 400;">
+                    ({{ recipes_count }})
+                </span>
+            {% endif %}
+        </h2>
+
+        {% if authored_recipes %}
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+                {% for recipe in authored_recipes %}
+                    <a href="{% url 'dishes:recipe-detail' recipe.pk %}" class="card" style="overflow: hidden; display: flex; flex-direction: column;">
+                        <div style="position: relative; padding-top: 66%; background: var(--line);">
+                            {% if recipe.image %}
+                                <img src="{{ recipe.image.url }}"
+                                     alt="{{ recipe.name }}"
+                                     style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                        <div style="padding: 16px; display: flex; flex-direction: column; flex-grow: 1;">
+                            <span class="eyebrow">{{ recipe.cuisine.country }}</span>
+                            <h3 style="font-size: 16px; margin-top: 4px; margin-bottom: 8px;">{{ recipe.name }}</h3>
+                            <div style="display: flex; justify-content: space-between; margin-top: auto; font-size: 12px; color: var(--ink-soft); padding-top: 10px; border-top: 1px solid var(--line);">
+                                <span>⏱ {{ recipe.cooking_time }} хв</span>
+                                <span>{{ recipe.created_at|date:"d.m.Y" }}</span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 40px 20px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);">
+                <p style="color: var(--ink-soft); margin: 0;">
+                    Цей кухар ще не додав жодного рецепта
+                </p>
+            </div>
+        {% endif %}
+    </section>
+
+</article>
+{% endblock %}

@@ -131,6 +131,17 @@ class CookDetailView(LoginRequiredMixin, generic.DetailView):
     model = Cook
     queryset = Cook.objects.prefetch_related("favorites")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cook = self.object
+        context["authored_recipes"] = cook.authored_recipes.select_related(
+            "cuisine"
+        ).order_by("-created_at")
+        context["recipes_count"] = cook.authored_recipes.count()
+        context["favorites_count"] = cook.favorites.count()
+        context["ratings_given"] = cook.ratings.count()
+        return context
+
 
 class CookCreateView(LoginRequiredMixin, generic.CreateView):
     model = Cook
@@ -171,7 +182,11 @@ class FavoriteListView(LoginRequiredMixin, generic.ListView):
     template_name = "dishes/favorite_list.html"
 
     def get_queryset(self):
-        return self.request.user.favorites.all()
+        return (
+            self.request.user.favorites
+            .select_related("cuisine", "author")
+            .order_by("-created_at")
+        )
 
 
 @login_required
