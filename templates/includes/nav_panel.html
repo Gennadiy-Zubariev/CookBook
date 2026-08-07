@@ -35,9 +35,15 @@
       {% if user.is_authenticated %}
         <a href="{% url 'dishes:favorite-list' %}" class="nav-icon-btn" aria-label="Обрані рецепти">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-          {% if user.favorites.count %}<span class="badge">{{ user.favorites.count }}</span>{% endif %}
         </a>
-        <a href="{% url 'logout' %}" class="btn btn-outline">Вийти</a>
+        {% if user.is_authenticated %}
+          <form method="post" action="{% url 'logout' %}" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline" style="border: none; padding: 10px 20px;">
+                  Вийти
+              </button>
+          </form>
+        {% endif %}
       {% else %}
         <a href="{% url 'login' %}" class="nav-icon-btn" aria-label="Профіль">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>

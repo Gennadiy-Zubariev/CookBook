@@ -1,10 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
 
-</body>
-</html>
+{% block title %}Вхід{% endblock %}
+
+{% block content %}
+<div style="max-width: 420px; margin: 60px auto;">
+
+    <header style="text-align: center; margin-bottom: 32px;">
+        <span class="eyebrow">Вхід</span>
+        <h1 style="font-size: 32px; margin-top: 8px;">З поверненням</h1>
+        <p style="color: var(--ink-soft); font-size: 14px; margin-top: 8px;">
+            Увійдіть, щоб зберігати улюблені рецепти й ділитись своїми
+        </p>
+    </header>
+
+    <form method="post" class="card" style="padding: 32px;">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div style="padding: 12px 16px; background: #fde8e0; border: 1px solid var(--clay); border-radius: var(--radius); color: var(--clay); margin-bottom: 20px; font-size: 13px;">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-field">
+            <label for="{{ form.username.id_for_label }}">Логін</label>
+            <input type="text"
+                   name="{{ form.username.name }}"
+                   id="{{ form.username.id_for_label }}"
+                   value="{{ form.username.value|default:'' }}"
+                   autofocus
+                   required
+                   style="width: 100%; padding: 10px 14px; background: var(--cream); border: 1px solid var(--line); border-radius: var(--radius); font-family: inherit; font-size: 14px;">
+            {% if form.username.errors %}
+                <ul class="errorlist">
+                    {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-field">
+            <label for="{{ form.password.id_for_label }}">Пароль</label>
+            <input type="password"
+                   name="{{ form.password.name }}"
+                   id="{{ form.password.id_for_label }}"
+                   required
+                   style="width: 100%; padding: 10px 14px; background: var(--cream); border: 1px solid var(--line); border-radius: var(--radius); font-family: inherit; font-size: 14px;">
+            {% if form.password.errors %}
+                <ul class="errorlist">
+                    {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;">
+            Увійти
+        </button>
+    </form>
+
+    <p style="text-align: center; margin-top: 24px; font-size: 14px; color: var(--ink-soft);">
+        Ще немає акаунту?
+        <a href="{% url 'dishes:cook-create' %}" style="color: var(--moss-dark); font-weight: 500;">
+            Зареєструватись
+        </a>
+    </p>
+</div>
+{% endblock %}
