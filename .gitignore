@@ -3,5 +3,6 @@
 venv/
 **__pycache__
 management/
+sample_image/
 media/
 db.sqlite3
