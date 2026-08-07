@@ -16,19 +16,27 @@ class CuisineListView(LoginRequiredMixin, generic.ListView):
 class CuisineCreateView(LoginRequiredMixin, generic.CreateView):
     model = Cuisine
     fields = "__all__"
+    template_name = "dishes/create_update_form.html"
     success_url = reverse_lazy("dishes:cuisine-list")
 
 
 class CuisineUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Cuisine
     fields = "__all__"
+    template_name = "dishes/create_update_form.html"
     success_url = reverse_lazy("dishes:cuisine-list")
+
 
 
 class CuisineDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Cuisine
     template_name = "dishes/form_confirm_delete.html"
     success_url = reverse_lazy("dishes:cuisine-list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["delete_url"] = self.success_url
+        return context
 
 
 class RecipeListView(LoginRequiredMixin, generic.ListView):
@@ -77,6 +85,7 @@ class RecipeCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateVi
         "tags",
         "image",
     ]
+    template_name = "dishes/create_update_form.html"
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -90,6 +99,7 @@ class RecipeUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateVi
     model = Recipe
     fields = ["name", "description", "ingredients", "instructions",
               "cooking_time", "cuisine", "tags", "image"]
+    template_name = "dishes/create_update_form.html"
     success_message = "Рецепт %(name)s змінено"
 
     def get_queryset(self):
@@ -121,6 +131,11 @@ class RecipeDeleteView(LoginRequiredMixin, generic.DeleteView):
     template_name = "dishes/form_confirm_delete.html"
     success_url = reverse_lazy("dishes:recipe-list")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["delete_url"] = self.success_url
+        return context
+
 
 class CookListView(generic.ListView):
     model = Cook
@@ -133,12 +148,13 @@ class CookDetailView(generic.DetailView):
 
 class CookCreateView(LoginRequiredMixin, generic.CreateView):
     model = Cook
-    # form_class = CookCreationForm
+    template_name = "dishes/create_update_form.html"
     success_url = reverse_lazy("dishes:cook-list")
 
 
 class RatingCreateView(LoginRequiredMixin, generic.CreateView):
     model = Rating
+    template_name = "dishes/create_update_form.html"
 
     def get_success_url(self):
         return reverse("dishes:recipe-detail", kwargs={"pk": self.object.recipe.pk})
@@ -151,9 +167,15 @@ class RatingDeleteView(LoginRequiredMixin, generic.DeleteView):
     def get_success_url(self):
         return reverse("dishes:recipe-detail", kwargs={"pk": self.object.recipe.pk})
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["delete_url"] = self.get_success_url()
+        return context
+
 
 class TagCreateView(LoginRequiredMixin, generic.CreateView):
     model = Tag
+    template_name = "dishes/create_update_form.html"
     success_url = reverse_lazy("dishes:tag-list")
 
 

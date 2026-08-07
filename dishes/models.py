@@ -57,7 +57,7 @@ class Recipe(models.Model):
 
     def __str__(self):
         return (
-            f"{self.name} - {self.cuisine} кухня, час приготування {self.cooking_time}"
+            f"{self.name} - {self.cuisine} кухня, час приготування {self.cooking_time} хв."
         )
 
 
