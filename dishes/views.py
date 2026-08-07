@@ -119,6 +119,12 @@ class RecipeDeleteView(LoginRequiredMixin, generic.DeleteView):
 class CookListView(LoginRequiredMixin, generic.ListView):
     model = Cook
 
+    def get_queryset(self):
+        queryset = Cook.objects.prefetch_related("favorites",)
+        search_param = self.request.GET.get("search_param")
+        if search_param:
+            queryset = queryset.filter(username__icontains=search_param)
+        return queryset
 
 
 class CookDetailView(LoginRequiredMixin, generic.DetailView):
