@@ -95,7 +95,7 @@
         {% if user.is_authenticated and can_rate %}
             <div class="card" style="padding: 20px; margin-bottom: 24px;">
                 <p style="margin: 0 0 12px; font-size: 14px;">Оцінили цей рецепт?</p>
-                <a href="{% url 'dishes:rating-create' %}?recipe={{ recipe.pk }}" class="btn btn-primary">Залишити відгук</a>
+                <a href="{% url 'dishes:rating-create' recipe.pk %}" class="btn btn-primary">Залишити відгук</a>
             </div>
         {% endif %}
 

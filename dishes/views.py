@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
 
+from dishes.forms import RatingForm
 from dishes.models import Cuisine, Recipe, Cook, Rating, Tag
 
 
@@ -33,10 +34,6 @@ class CuisineDeleteView(LoginRequiredMixin, generic.DeleteView):
     template_name = "dishes/form_confirm_delete.html"
     success_url = reverse_lazy("dishes:cuisine-list")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["delete_url"] = self.success_url
-        return context
 
 
 class RecipeListView(LoginRequiredMixin, generic.ListView):
@@ -131,10 +128,6 @@ class RecipeDeleteView(LoginRequiredMixin, generic.DeleteView):
     template_name = "dishes/form_confirm_delete.html"
     success_url = reverse_lazy("dishes:recipe-list")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["delete_url"] = self.success_url
-        return context
 
 
 class CookListView(generic.ListView):
@@ -154,10 +147,21 @@ class CookCreateView(LoginRequiredMixin, generic.CreateView):
 
 class RatingCreateView(LoginRequiredMixin, generic.CreateView):
     model = Rating
+    form_class = RatingForm
     template_name = "dishes/create_update_form.html"
 
     def get_success_url(self):
         return reverse("dishes:recipe-detail", kwargs={"pk": self.object.recipe.pk})
+
+    def form_valid(self, form):
+        recipe = get_object_or_404(Recipe, pk=self.kwargs["recipe_pk"])
+        if recipe.author == self.request.user:
+            form.add_error(None, "Ви не можете оцінити свій власний рецепт")
+            return self.form_invalid(form)
+
+        form.instance.cook = self.request.user
+        form.instance.recipe = recipe
+        return super().form_valid(form)
 
 
 class RatingDeleteView(LoginRequiredMixin, generic.DeleteView):
@@ -167,10 +171,6 @@ class RatingDeleteView(LoginRequiredMixin, generic.DeleteView):
     def get_success_url(self):
         return reverse("dishes:recipe-detail", kwargs={"pk": self.object.recipe.pk})
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["delete_url"] = self.get_success_url()
-        return context
 
 
 class TagCreateView(LoginRequiredMixin, generic.CreateView):
