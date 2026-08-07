@@ -37,13 +37,48 @@
     {% endif %}
 
     {% if recipe.tags.all %}
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px;">
-            {% for tag in recipe.tags.all %}
-                <span style="display: inline-block; padding: 4px 12px; background: var(--line); color: var(--ink-soft); border-radius: 12px; font-size: 12px;">
-                    #{{ tag.name }}
-                </span>
-            {% endfor %}
-        </div>
+        <section style="margin-bottom: 24px;">
+            <h3 style="font-size: 14px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft);">
+                Теги
+            </h3>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                {% for tag in recipe.tags.all %}
+                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: var(--line); color: var(--ink-soft); border-radius: 12px; font-size: 12px;">
+                        <a href="{% url 'dishes:recipe-list' %}?tag_search_param={{ tag.pk }}"
+                           style="color: var(--ink-soft);">
+                            #{{ tag.name }}
+                        </a>
+                        {% if recipe.author == user %}
+                            <a href="{% url 'dishes:remove-tag' recipe.pk tag.pk %}"
+                               style="color: var(--clay); font-weight: 500; line-height: 1;"
+                               onclick="return confirm('Прибрати тег?');"
+                               title="Прибрати тег">
+                                ×
+                            </a>
+                        {% endif %}
+                    </span>
+                {% empty %}
+                    <span style="color: var(--ink-soft); font-size: 13px;">Тегів поки немає</span>
+                {% endfor %}
+            </div>
+
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'dishes:add-tag' recipe.pk %}"
+                      style="display: flex; gap: 8px; max-width: 400px;">
+                    {% csrf_token %}
+                    <input type="text"
+                           name="name"
+                           placeholder="Додати тег..."
+                           maxlength="255"
+                           required
+                           style="flex: 1; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); font-family: inherit; font-size: 13px; background: var(--cream);">
+                    <button type="submit" class="btn btn-outline" style="padding: 8px 16px; font-size: 13px;">
+                        + Додати
+                    </button>
+                </form>
+            {% endif %}
+        </section>
     {% endif %}
 
     <section style="margin-bottom: 40px;">

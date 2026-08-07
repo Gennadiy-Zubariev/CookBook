@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -13,27 +14,12 @@ from dishes.models import Cuisine, Recipe, Cook, Rating, Tag
 class CuisineListView(LoginRequiredMixin, generic.ListView):
     model = Cuisine
 
-
-class CuisineCreateView(LoginRequiredMixin, generic.CreateView):
-    model = Cuisine
-    fields = "__all__"
-    template_name = "dishes/create_update_form.html"
-    success_url = reverse_lazy("dishes:cuisine-list")
-
-
-class CuisineUpdateView(LoginRequiredMixin, generic.UpdateView):
-    model = Cuisine
-    fields = "__all__"
-    template_name = "dishes/create_update_form.html"
-    success_url = reverse_lazy("dishes:cuisine-list")
-
-
-
-class CuisineDeleteView(LoginRequiredMixin, generic.DeleteView):
-    model = Cuisine
-    template_name = "dishes/form_confirm_delete.html"
-    success_url = reverse_lazy("dishes:cuisine-list")
-
+    def get_queryset(self):
+        queryset = Cuisine.objects.all()
+        search_param = self.request.GET.get("search_param")
+        if search_param:
+            queryset = queryset.filter(country__icontains=search_param)
+        return queryset
 
 
 class RecipeListView(LoginRequiredMixin, generic.ListView):
@@ -130,11 +116,12 @@ class RecipeDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 
 
-class CookListView(generic.ListView):
+class CookListView(LoginRequiredMixin, generic.ListView):
     model = Cook
 
 
-class CookDetailView(generic.DetailView):
+
+class CookDetailView(LoginRequiredMixin, generic.DetailView):
     model = Cook
     queryset = Cook.objects.prefetch_related("favorites")
 
@@ -173,16 +160,6 @@ class RatingDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 
 
-class TagCreateView(LoginRequiredMixin, generic.CreateView):
-    model = Tag
-    template_name = "dishes/create_update_form.html"
-    success_url = reverse_lazy("dishes:tag-list")
-
-
-class TagListView(LoginRequiredMixin, generic.ListView):
-    model = Tag
-
-
 class FavoriteListView(LoginRequiredMixin, generic.ListView):
     model = Recipe
     template_name = "dishes/favorite_list.html"
@@ -198,4 +175,38 @@ def toggle_favorite(request, pk):
         request.user.favorites.remove(recipe)
     else:
         request.user.favorites.add(recipe)
+    return redirect("dishes:recipe-detail", pk=pk)
+
+@login_required
+def add_tag_to_recipe(request, pk):
+    recipe = get_object_or_404(Recipe, pk=pk)
+
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip().lower()
+
+        if name:
+            tag, created = Tag.objects.get_or_create(name=name)
+            recipe.tags.add(tag)
+
+            if created:
+                messages.success(request, f"Тег #{name} створено і додано")
+            else:
+                messages.info(request, f"Тег #{name} додано до рецепта")
+        else:
+            messages.error(request, "Введіть назву тегу")
+
+    return redirect("dishes:recipe-detail", pk=pk)
+
+
+@login_required
+def remove_tag_from_recipe(request, pk, tag_pk):
+    recipe = get_object_or_404(Recipe, pk=pk)
+
+    if recipe.author != request.user:
+        messages.error(request, "Тільки автор рецепта може прибирати теги")
+        return redirect("dishes:recipe-detail", pk=pk)
+
+    tag = get_object_or_404(Tag, pk=tag_pk)
+    recipe.tags.remove(tag)
+    messages.info(request, f"Тег #{tag.name} прибрано")
     return redirect("dishes:recipe-detail", pk=pk)

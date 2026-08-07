@@ -23,7 +23,6 @@
       <li><a href="{% url 'index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">Головна</a></li>
       <li><a href="{% url 'dishes:recipe-list' %}" class="{% if request.resolver_match.url_name == 'recipe-list' %}active{% endif %}">Усі рецепти</a></li>
       <li><a href="{% url 'dishes:cuisine-list' %}">Кухні світу</a></li>
-      <li><a href="{% url 'dishes:tag-list' %}">Теги</a></li>
       <li><a href="{% url 'dishes:cook-list' %}">Автори блюд</a></li>
 
     </ul>

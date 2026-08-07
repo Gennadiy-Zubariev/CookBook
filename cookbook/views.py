@@ -30,3 +30,5 @@ def index_cookbook(request):
         "popular_recipes": popular_recipes,
     }
     return render(request, "index.html", context=context)
+
+

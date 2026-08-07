@@ -1,10 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
 
-</body>
-</html>
+{% block title %}Усі кухні світу{% endblock %}
+
+{% block content %}
+
+<header style="margin-bottom: 40px;">
+    <h1 style="font-size: 42px; margin-top: 8px;">Усі рецепти</h1>
+    <p style="color: var(--ink-soft); margin-top: 8px;">
+        Кількість країн - {{ total_count }}
+    </p>
+</header>
+
+<form method="get" style="display: flex; gap: 12px; margin-bottom: 32px; padding: 20px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);">
+    <input
+        type="text"
+        name="search_param"
+        value="{{ request.GET.search_param }}"
+        placeholder="Пошук за назвою..."
+        style="flex: 1; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius); font-family: inherit; font-size: 14px; background: var(--cream);"
+    >
+
+
+    <button type="submit" class="btn btn-primary">Шукати</button>
+
+    {% if request.GET.search_param %}
+        <a href="{% url 'dishes:cuisine-list' %}" class="btn btn-outline">Скинути</a>
+    {% endif %}
+</form>
+
+{% if cuisine_list %}
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-bottom: 48px;">
+      {% for cuisine in cuisine_list %}
+    <a href="{% url 'dishes:recipe-list' %}?cuisine_search_param={{ cuisine.pk }}">
+      {{ cuisine.country }}
+    </a>
+      {% if user.is_authentacated %}
+        <a href="{% url 'dishes:cuisine-delete' cuisine.pk %}" style="font-size: 12px; color: var(--clay);">Видалити країну</a>
+      {% endif %}
+    {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        {% include "includes/pagination.html" %}
+    {% endif %}
+
+{% else %}
+    <div style="text-align: center; padding: 60px 20px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);">
+        <p style="color: var(--ink-soft); font-size: 16px; margin: 0 0 16px;">
+            Нічого не знайдено 🍽
+        </p>
+    </div>
+{% endif %}
+
+{% endblock %}
