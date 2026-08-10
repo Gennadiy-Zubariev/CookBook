@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
 
-from dishes.forms import RatingForm
+from dishes.forms import RatingForm, CookCreationForm
 from dishes.models import Cuisine, Recipe, Cook, Rating, Tag
 
 
@@ -146,8 +146,9 @@ class CookDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-class CookCreateView(LoginRequiredMixin, generic.CreateView):
+class CookCreateView(generic.CreateView):
     model = Cook
+    form_class = CookCreationForm
     template_name = "dishes/create_update_form.html"
     success_url = reverse_lazy("dishes:cook-list")
 
