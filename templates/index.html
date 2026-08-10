@@ -15,7 +15,7 @@
     <span class="eyebrow">Рецепт дня</span>
     <h1 style="font-size: 32px; margin-top: 8px;">{{ featured_recipe.name }}</h1>
     <p style="color: var(--ink-soft); font-size: 13px;">
-      ⏱ {{ featured_recipe.cooking_time }} хв &nbsp;·&nbsp; {{ featured_recipe.cuisine.name }}
+      ⏱ {{ featured_recipe.cooking_time }} хв.
     </p>
     <p style="margin-top: 12px;">{{ featured_recipe.description|truncatewords:28 }}</p>
     <div style="display:flex; align-items:center; gap:10px; margin-top: 24px; padding-top:16px; border-top:1px solid var(--line);">
@@ -37,7 +37,6 @@
           <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" style="height:160px; width:100%; object-fit:cover;">
         {% endif %}
         <div style="padding: 16px;">
-          <span class="eyebrow">{{ recipe.cuisine.name }}</span>
           <h3 style="font-size:17px; margin-top:6px;">{{ recipe.name }}</h3>
         </div>
       </a>

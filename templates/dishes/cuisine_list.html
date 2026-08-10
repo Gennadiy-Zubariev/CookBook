@@ -6,9 +6,9 @@
 {% block content %}
 
 <header style="margin-bottom: 40px;">
-    <h1 style="font-size: 42px; margin-top: 8px;">Усі рецепти</h1>
+    <h1 style="font-size: 42px; margin-top: 8px;">Кухні світу</h1>
     <p style="color: var(--ink-soft); margin-top: 8px;">
-        Кількість країн - {{ total_count }}
+        Кількість країн - {{ cuisine_list|length }}
     </p>
 </header>
 
@@ -35,9 +35,6 @@
     <a href="{% url 'dishes:recipe-list' %}?cuisine_search_param={{ cuisine.pk }}">
       {{ cuisine.country }}
     </a>
-      {% if user.is_authentacated %}
-        <a href="{% url 'dishes:cuisine-delete' cuisine.pk %}" style="font-size: 12px; color: var(--clay);">Видалити країну</a>
-      {% endif %}
     {% endfor %}
     </div>
 

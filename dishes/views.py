@@ -13,6 +13,7 @@ from dishes.models import Cuisine, Recipe, Cook, Rating, Tag
 
 class CuisineListView(LoginRequiredMixin, generic.ListView):
     model = Cuisine
+    paginate_by = 9
 
     def get_queryset(self):
         queryset = Cuisine.objects.all()
@@ -24,7 +25,7 @@ class CuisineListView(LoginRequiredMixin, generic.ListView):
 
 class RecipeListView(LoginRequiredMixin, generic.ListView):
     model = Recipe
-    # paginate_by = 4
+    paginate_by = 9
     
 
     def get_context_data(self, **kwargs):
@@ -118,6 +119,7 @@ class RecipeDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class CookListView(LoginRequiredMixin, generic.ListView):
     model = Cook
+    paginate_by = 9
 
     def get_queryset(self):
         queryset = Cook.objects.prefetch_related("favorites",)
