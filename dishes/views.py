@@ -41,6 +41,7 @@ class RecipeListView(LoginRequiredMixin, generic.ListView):
             .select_related("cuisine", "author")
             .prefetch_related("tags", "favorited_by")
             .annotate(avg_score=Avg("ratings__score"))
+            .order_by("-avg_score")
         )
         search_param = self.request.GET.get("search_param")
         if search_param:

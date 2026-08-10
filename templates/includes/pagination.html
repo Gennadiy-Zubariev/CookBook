@@ -1,16 +1,79 @@
-{% load query_transform %}
 {% if is_paginated %}
-  <ul class="pagination">
+{% load query_transform %}
+
+<nav aria-label="Пагінація"
+     style="display: flex; justify-content: center; align-items: center; gap: 6px; margin: 48px 0 20px;">
+
     {% if page_obj.has_previous %}
-      <li class="page-item">
-        <a class="page-link" href="?{% query_transform request page=page_obj.previous_page_number %}">Prev</a>
-      </li>
+        <a href="?{% query_transform request page=page_obj.previous_page_number %}"
+           style="display: inline-flex; align-items: center; justify-content: center;
+                  min-width: 40px; height: 40px; padding: 0 14px;
+                  border: 1px solid var(--line); border-radius: var(--radius);
+                  color: var(--ink); text-decoration: none; font-size: 14px;
+                  transition: all .15s ease;"
+           onmouseover="this.style.borderColor='var(--moss)'; this.style.color='var(--moss-dark)';"
+           onmouseout="this.style.borderColor='var(--line)'; this.style.color='var(--ink)';">
+            ←
+        </a>
+    {% else %}
+        <span style="display: inline-flex; align-items: center; justify-content: center;
+                     min-width: 40px; height: 40px; padding: 0 14px;
+                     border: 1px solid var(--line); border-radius: var(--radius);
+                     color: var(--line); font-size: 14px;">
+            ←
+        </span>
     {% endif %}
-      <li class="page-item active"><span class="page-link">{{ page_obj.number }} of {{ paginator.num_pages }}</span></li>
+
+    {% for num in paginator.page_range %}
+        {% if num == page_obj.number %}
+            <span style="display: inline-flex; align-items: center; justify-content: center;
+                         min-width: 40px; height: 40px; padding: 0 8px;
+                         background: var(--moss); color: #fff;
+                         border-radius: var(--radius);
+                         font-family: 'Fraunces', serif; font-size: 16px; font-weight: 500;">
+                {{ num }}
+            </span>
+        {% elif num == 1 or num == paginator.num_pages or num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+            <a href="?{% query_transform request page=num %}"
+               style="display: inline-flex; align-items: center; justify-content: center;
+                      min-width: 40px; height: 40px; padding: 0 8px;
+                      border: 1px solid var(--line); border-radius: var(--radius);
+                      color: var(--ink); text-decoration: none;
+                      font-family: 'Fraunces', serif; font-size: 16px; font-weight: 500;
+                      transition: all .15s ease;"
+               onmouseover="this.style.borderColor='var(--moss)'; this.style.color='var(--moss-dark)';"
+               onmouseout="this.style.borderColor='var(--line)'; this.style.color='var(--ink)';">
+                {{ num }}
+            </a>
+        {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+            <span style="color: var(--ink-soft); padding: 0 4px; font-size: 14px;">…</span>
+        {% endif %}
+    {% endfor %}
+
     {% if page_obj.has_next %}
-      <li class="page-item">
-        <a class="page-link" href="?{% query_transform request page=page_obj.next_page_number %}">Next</a>
-      </li>
+        <a href="?{% query_transform request page=page_obj.next_page_number %}"
+           style="display: inline-flex; align-items: center; justify-content: center;
+                  min-width: 40px; height: 40px; padding: 0 14px;
+                  border: 1px solid var(--line); border-radius: var(--radius);
+                  color: var(--ink); text-decoration: none; font-size: 14px;
+                  transition: all .15s ease;"
+           onmouseover="this.style.borderColor='var(--moss)'; this.style.color='var(--moss-dark)';"
+           onmouseout="this.style.borderColor='var(--line)'; this.style.color='var(--ink)';">
+            →
+        </a>
+    {% else %}
+        <span style="display: inline-flex; align-items: center; justify-content: center;
+                     min-width: 40px; height: 40px; padding: 0 14px;
+                     border: 1px solid var(--line); border-radius: var(--radius);
+                     color: var(--line); font-size: 14px;">
+            →
+        </span>
     {% endif %}
-  </ul>
+</nav>
+
+<p style="text-align: center; color: var(--ink-soft); font-size: 12px; margin-top: 12px;">
+    Сторінка {{ page_obj.number }} з {{ paginator.num_pages }}
+    · Всього {{ paginator.count }}
+</p>
+
 {% endif %}
