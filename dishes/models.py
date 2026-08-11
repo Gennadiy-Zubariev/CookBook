@@ -49,7 +49,7 @@ class Recipe(models.Model):
         related_name="authored_recipes",
     )
     tags = models.ManyToManyField(Tag, related_name="recipes", blank=True)
-    image = models.ImageField(upload_to="dishes/media", null=True)
+    image = models.ImageField(upload_to="dishes/media", null=True, unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

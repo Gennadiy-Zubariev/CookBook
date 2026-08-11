@@ -23,10 +23,10 @@ TAGS = [
 ]
 
 
-SAMPLE_IMAGES_DIR = Path(settings.BASE_DIR) / "sample_images"
+SAMPLE_IMAGES_DIR = Path(settings.BASE_DIR) / "sample_image"
 
 def get_sample_image():
-    files = list(SAMPLE_IMAGES_DIR.glob("*.jpg")) + list(SAMPLE_IMAGES_DIR.glob("*.png"))
+    files = list(SAMPLE_IMAGES_DIR.glob("*.jpg"))
     if not files:
         return None
     path = random.choice(files)
