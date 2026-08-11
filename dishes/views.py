@@ -151,6 +151,7 @@ class CookCreateView(generic.CreateView):
     form_class = CookCreationForm
     template_name = "dishes/create_update_form.html"
     success_url = reverse_lazy("dishes:cook-list")
+    success_message = "Користувача %(username)s успішно створено"
 
 
 class RatingCreateView(LoginRequiredMixin, generic.CreateView):
@@ -198,9 +199,12 @@ def toggle_favorite(request, pk):
     recipe = get_object_or_404(Recipe, pk=pk)
     if request.user.favorites.filter(pk=pk).exists():
         request.user.favorites.remove(recipe)
+        messages.info(request, f"Рецепт «{recipe.name}» видалено з обраного")
     else:
         request.user.favorites.add(recipe)
+        messages.success(request, f"Рецепт «{recipe.name}» додано до обраного")
     return redirect("dishes:recipe-detail", pk=pk)
+
 
 @login_required
 def add_tag_to_recipe(request, pk):
