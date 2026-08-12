@@ -1,75 +1,100 @@
 # 🍳 Cookbook
 
-A Django web application for sharing and discovering recipes. Users can create recipes, rate dishes from other cooks, organize content with tags, and build a personal collection of favorite recipes.
-
-## Опис функціоналу
-
-### Головна сторінка
-
-На головній сторінці відображається **випадковий рецепт дня** — кожне відвідування показує нову страву з фото, описом, автором та кнопкою для перегляду. Нижче розташований блок **«Рекомендації»** — три рецепти, які мають найбільше відгуків від спільноти. Якщо жоден рецепт ще не отримав відгуків, блок рекомендацій не показується.
-
-### Усі рецепти
-
-Сторінка каталогу з усіма рецептами, відсортованими за рейтингом. Кожен рецепт відображається як картка з фото, назвою, кухнею, часом приготування та середньою оцінкою. Над списком розташована **панель фільтрації** з трьома параметрами:
-
-- **Пошук за назвою** — текстовий ввід, фільтрує рецепти, що містять введене слово в назві або описі
-- **Фільтр за кухнею** — випадаючий список усіх кухонь світу
-- **Фільтр за тегом** — випадаючий список усіх тегів
-
-Фільтри зберігаються при переході між сторінками пагінації завдяки кастомному template-тегу `query_transform`. Якщо жоден рецепт не знайдено — показується повідомлення з пропозицією скинути фільтри.
-
-### Деталі рецепта
-
-Повна інформація про рецепт: фото, назва, кухня, автор (посилання на профіль), час приготування, дата створення, середня оцінка. Сторінка містить такі блоки:
-
-- **Теги** — список тегів-посилань; клік веде на каталог, відфільтрований за цим тегом. Будь-який залогінений користувач може додати новий тег прямо на цій сторінці через інлайн-форму. Автор рецепта бачить кнопку × біля кожного тегу для видалення.
-- **Інгредієнти та приготування** — виводяться з форматуванням (кожен рядок окремо).
-- **Кнопка «Додати в обране»** — toggle, який додає або прибирає рецепт з персонального списку обраного. Якщо рецепт вже в обраному — кнопка змінює вигляд на «В обраному».
-- **Редагування та видалення** — кнопки з'являються тільки якщо поточний користувач є автором рецепта. Інші користувачі їх не бачать і не мають доступу до відповідних URL (отримають 404).
-- **Відгуки** — список оцінок від інших кухарів із зірочками (1–5) та коментарями. Користувач може залишити відгук, якщо він залогінений і ще не оцінював цей рецепт. Автор рецепта не може оцінити свою страву. Один користувач може залишити лише один відгук на рецепт (UniqueConstraint).
-
-### Кухні світу
-
-Каталог кухонь у вигляді сітки карток. Кожна картка показує назву кухні та кількість рецептів. Клік на картку веде на сторінку «Усі рецепти», вже відфільтровану за цією кухнею. Керування кухнями (додавання, редагування, видалення) доступне тільки через Django admin для адміністраторів.
-
-### Теги
-
-Список усіх тегів у вигляді хмари тегів. Кожен тег показує кількість рецептів, до яких він прив'язаний. Клік веде на каталог рецептів, відфільтрований за цим тегом. Нові теги створюються безпосередньо на сторінці рецепта (не через окрему форму).
-
-### Профіль кухаря
-
-Сторінка профілю показує:
-
-- **Аватарка** — автоматично генерується з першої літери імені або username
-- **Інформація** — username, повне ім'я, дата реєстрації, біографія
-- **Статистика** — кількість рецептів, відгуків, рецептів в обраному
-- **Рецепти автора** — сітка карток з пагінацією (6 на сторінку), реалізованою вручну через Paginator (бо DetailView не має вбудованої пагінації)
-
-### Обране
-
-Персональна колекція рецептів, які користувач позначив як улюблені. Рецепти відображаються з позначкою ♥. Якщо список порожній — показується повідомлення з пропозицією знайти рецепти.
-
-### Автентифікація
-
-- **Реєстрація** — форма з username, паролем (двічі), ім'ям, прізвищем та біографією. Використовує UserCreationForm для безпечного хешування паролів.
-- **Вхід** — стандартна форма Django LoginView зі стилізованими полями. Після входу — редірект на головну.
-- **Вихід** — через POST-запит (Django 5+). Показує сторінку «До зустрічі» з кнопками повернення.
-- **Обмеження доступу** — незалогінені користувачі не мають доступу до списку рецептів, створення, редагування, видалення та обраного. Головна сторінка — публічна.
-
-### Повідомлення
-
-Після кожної дії (створення рецепта, додавання в обране) користувач бачить flash-повідомлення через Django Messages Framework. Повідомлення показуються один раз і зникають після оновлення сторінки. Використовуються рівні: success, info, warning, error.
-
-### Адмін-панель
-
-Кухні та глобальне керування контентом здійснюється через Django admin (`/admin/`). Налаштовано list_display, search_fields, list_filter, autocomplete_fields та filter_horizontal для зручної роботи.
+A Django web application for sharing and discovering recipes. Users can create recipes, rate dishes from other cooks,
+organize content with tags, and build a personal collection of favorite recipes.
 
 ## Features
 
-- **Recipe Management** — Create, edit, and delete your own recipes with images, ingredients, step-by-step instructions, and cooking time
-- **Rating System** — Rate recipes from other cooks on a 1–5 scale with optional comments; unique constraint prevents duplicate ratings
+### Home Page
+
+The home page displays a **random recipe of the day** — each visit shows a new dish with a photo, description, author,
+and a button to view the full recipe. Below is a **"Recommendations"** block — three recipes with the most community
+reviews. If no recipe has received any reviews yet, the recommendations block is hidden.
+
+### All Recipes
+
+A catalog page with all recipes sorted by rating. Each recipe is displayed as a card with a photo, name, cuisine,
+cooking time, and average rating. Above the list is a **filter panel** with three parameters:
+
+- **Search by name** — a text input that filters recipes containing the entered word in the name or description
+- **Filter by cuisine** — a dropdown list of all cuisines
+- **Filter by tag** — a dropdown list of all tags
+
+Filters are preserved when navigating between pagination pages thanks to the custom `query_transform` template tag. If
+no recipes are found, a message is shown with an option to reset the filters.
+
+### Recipe Detail
+
+Full recipe information: photo, name, cuisine, author (link to profile), cooking time, creation date, and average
+rating. The page contains the following sections:
+
+- **Tags** — a list of tag links; clicking a tag leads to the catalog filtered by that tag. Any logged-in user can add a
+  new tag directly on this page via an inline form. The recipe author sees a × button next to each tag to remove it.
+- **Ingredients & Instructions** — displayed with formatting (each line separately).
+- **"Add to Favorites" button** — a toggle that adds or removes the recipe from the personal favorites list. If the
+  recipe is already in favorites, the button changes to "In Favorites".
+- **Edit & Delete** — buttons appear only if the current user is the recipe author. Other users cannot see them and have
+  no access to the corresponding URLs (they receive a 404).
+- **Reviews** — a list of ratings from other cooks with stars (1–5) and comments. A user can leave a review if they are
+  logged in and have not yet rated this recipe. The recipe author cannot rate their own dish. Each user can leave only
+  one review per recipe (`UniqueConstraint`).
+
+### Cuisines
+
+A catalog of cuisines displayed as a grid of cards. Each card shows the cuisine name and the number of recipes. Clicking
+a card leads to the "All Recipes" page filtered by that cuisine. Cuisine management (adding, editing, deleting) is
+available only through the Django admin panel for administrators.
+
+### Tags
+
+A list of all tags displayed as a tag cloud. Each tag shows the number of recipes it is attached to. Clicking a tag
+leads to the recipe catalog filtered by that tag. New tags are created directly on the recipe page (not through a
+separate form).
+
+### Cook Profile
+
+The profile page displays:
+
+- **Avatar** — automatically generated from the first letter of the name or username
+- **Info** — username, full name, registration date, biography
+- **Stats** — number of recipes, reviews, and recipes in favorites
+- **Author's Recipes** — a grid of cards with pagination (6 per page), implemented manually via `Paginator` (since
+  `DetailView` has no built-in pagination)
+
+### Favorites
+
+A personal collection of recipes marked as favorites by the user. Recipes are displayed with a ♥ mark. If the list is
+empty, a message is shown with a suggestion to find recipes.
+
+### Authentication
+
+- **Registration** — a form with username, password (twice), first name, last name, and biography. Uses
+  `UserCreationForm` for secure password hashing.
+- **Login** — a standard Django `LoginView` form with styled fields. After login, redirects to the home page.
+- **Logout** — via POST request (Django 5+). Displays a "See you later" page with return buttons.
+- **Access restrictions** — unauthenticated users cannot access the recipe list, creation, editing, deletion, or
+  favorites. The home page is public.
+
+### Flash Messages
+
+After each action (creating a recipe, adding to favorites), the user sees a flash message via the Django Messages
+Framework. Messages are shown once and disappear after a page refresh. Levels used: `success`, `info`, `warning`,
+`error`.
+
+### Admin Panel
+
+Cuisines and global content management are handled through the Django admin (`/admin/`). Configured with `list_display`,
+`search_fields`, `list_filter`, `autocomplete_fields`, and `filter_horizontal` for convenient management.
+
+## Features
+
+- **Recipe Management** — Create, edit, and delete your own recipes with images, ingredients, step-by-step instructions,
+  and cooking time
+- **Rating System** — Rate recipes from other cooks on a 1–5 scale with optional comments; unique constraint prevents
+  duplicate ratings
 - **Favorites** — Toggle recipes in and out of your personal favorites list with a single click
-- **Tagging** — Add tags to any recipe directly from the detail page; tags are normalized (lowercased, trimmed) and reused across recipes
+- **Tagging** — Add tags to any recipe directly from the detail page; tags are normalized (lowercased, trimmed) and
+  reused across recipes
 - **Search & Filtering** — Filter recipes by name, cuisine, or tag; filters persist through pagination
 - **Cuisine Catalog** — Browse world cuisines managed by administrators; click any cuisine to see its recipes
 - **Cook Profiles** — View any cook's profile with their authored recipes, ratings given, and favorites count
@@ -225,15 +250,15 @@ Cuisines and tags are managed through Django admin at `/admin/`. The admin inter
 
 The project uses a custom CSS design system with a warm, editorial aesthetic:
 
-| Token       | Value     | Usage                    |
-|-------------|-----------|--------------------------|
-| `--cream`   | `#F7F4EC` | Page background          |
-| `--paper`   | `#FFFFFF` | Card surfaces            |
-| `--ink`     | `#22301F` | Primary text             |
-| `--ink-soft`| `#5B6558` | Secondary text           |
-| `--line`    | `#DEDACD` | Borders                  |
-| `--moss`    | `#3F5B3F` | Accent (links, buttons)  |
-| `--clay`    | `#B9704A` | Rating / favorite accent |
+| Token        | Value     | Usage                    |
+|--------------|-----------|--------------------------|
+| `--cream`    | `#F7F4EC` | Page background          |
+| `--paper`    | `#FFFFFF` | Card surfaces            |
+| `--ink`      | `#22301F` | Primary text             |
+| `--ink-soft` | `#5B6558` | Secondary text           |
+| `--line`     | `#DEDACD` | Borders                  |
+| `--moss`     | `#3F5B3F` | Accent (links, buttons)  |
+| `--clay`     | `#B9704A` | Rating / favorite accent |
 
 ## Demo Credentials
 

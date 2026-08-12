@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from dishes.models import Recipe, Rating, Cook, Cuisine, Tag
+from dishes.models import Cuisine, Rating, Recipe, Tag
+
 
 class ModelTests(TestCase):
     def setUp(self):
@@ -41,12 +42,17 @@ class ModelTests(TestCase):
 
     def test_cook_str(self):
         """Cook __str__ returns username with full name."""
-        self.assertEqual(str(self.cook), f"{self.cook.username} - {self.cook.first_name} {self.cook.last_name}")
+        self.assertEqual(
+            str(self.cook),
+            f"{self.cook.username} - {self.cook.first_name} {self.cook.last_name}",
+        )
 
     def test_recipe_str(self):
         """Recipe __str__ returns name, cuisine and cooking time."""
         self.assertEqual(
-            str(self.recipe), f"{self.recipe.name} - {self.recipe.cuisine} кухня, час приготування {self.recipe.cooking_time} хв."
+            str(self.recipe),
+            (
+                f"{self.recipe.name} - {self.recipe.cuisine} кухня, "
+                f"час приготування {self.recipe.cooking_time} хв."
+            ),
         )
-
-

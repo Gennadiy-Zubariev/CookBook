@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
-from dishes.models import Cuisine, Recipe, Cook
+
+from dishes.models import Cuisine, Recipe
 
 
 class AdminSiteTests(TestCase):

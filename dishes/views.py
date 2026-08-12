@@ -1,14 +1,13 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.aggregates import Avg
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy, reverse
-from django.views import generic, View
+from django.urls import reverse, reverse_lazy
+from django.views import View, generic
 
-from dishes.forms import RatingForm, CookCreationForm
-from dishes.models import Cuisine, Recipe, Cook, Rating, Tag
+from dishes.forms import CookCreationForm, RatingForm
+from dishes.models import Cook, Cuisine, Rating, Recipe, Tag
 
 
 class CuisineListView(LoginRequiredMixin, generic.ListView):
@@ -26,7 +25,6 @@ class CuisineListView(LoginRequiredMixin, generic.ListView):
 class RecipeListView(LoginRequiredMixin, generic.ListView):
     model = Recipe
     paginate_by = 9
-    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -37,8 +35,7 @@ class RecipeListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         queryset = (
-            Recipe.objects
-            .select_related("cuisine", "author")
+            Recipe.objects.select_related("cuisine", "author")
             .prefetch_related("tags", "favorited_by")
             .annotate(avg_score=Avg("ratings__score"))
             .order_by("-avg_score")
@@ -54,11 +51,11 @@ class RecipeListView(LoginRequiredMixin, generic.ListView):
             queryset = queryset.filter(tags__id=tag_id)
 
         return queryset
-            
 
 
-
-class RecipeCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateView):
+class RecipeCreateView(
+    SuccessMessageMixin, LoginRequiredMixin, generic.CreateView
+):
     model = Recipe
     fields = [
         "name",
@@ -80,10 +77,20 @@ class RecipeCreateView(SuccessMessageMixin, LoginRequiredMixin, generic.CreateVi
     success_url = reverse_lazy("dishes:recipe-list")
 
 
-class RecipeUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView):
+class RecipeUpdateView(
+    SuccessMessageMixin, LoginRequiredMixin, generic.UpdateView
+):
     model = Recipe
-    fields = ["name", "description", "ingredients", "instructions",
-              "cooking_time", "cuisine", "tags", "image"]
+    fields = [
+        "name",
+        "description",
+        "ingredients",
+        "instructions",
+        "cooking_time",
+        "cuisine",
+        "tags",
+        "image",
+    ]
     template_name = "dishes/create_update_form.html"
     success_message = "Рецепт %(name)s змінено"
 
@@ -96,14 +103,16 @@ class RecipeUpdateView(SuccessMessageMixin, LoginRequiredMixin, generic.UpdateVi
 
 class RecipeDetailView(LoginRequiredMixin, generic.DetailView):
     model = Recipe
-    queryset = Recipe.objects.select_related("cuisine", "author").prefetch_related(
-        "tags", "ratings", "favorited_by"
-    )
+    queryset = Recipe.objects.select_related(
+        "cuisine", "author"
+    ).prefetch_related("tags", "ratings", "favorited_by")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         recipe = self.object
-        context["avg_score"] = recipe.ratings.aggregate(Avg("score"))["score__avg"]
+        context["avg_score"] = recipe.ratings.aggregate(Avg("score"))[
+            "score__avg"
+        ]
         context["can_rate"] = (
             self.request.user.is_authenticated
             and not recipe.ratings.filter(cook=self.request.user).exists()
@@ -117,13 +126,14 @@ class RecipeDeleteView(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("dishes:recipe-list")
 
 
-
 class CookListView(LoginRequiredMixin, generic.ListView):
     model = Cook
     paginate_by = 9
 
     def get_queryset(self):
-        queryset = Cook.objects.prefetch_related("favorites",)
+        queryset = Cook.objects.prefetch_related(
+            "favorites",
+        )
         search_param = self.request.GET.get("search_param")
         if search_param:
             queryset = queryset.filter(username__icontains=search_param)
@@ -160,7 +170,9 @@ class RatingCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "dishes/create_update_form.html"
 
     def get_success_url(self):
-        return reverse("dishes:recipe-detail", kwargs={"pk": self.object.recipe.pk})
+        return reverse(
+            "dishes:recipe-detail", kwargs={"pk": self.object.recipe.pk}
+        )
 
     def form_valid(self, form):
         recipe = get_object_or_404(Recipe, pk=self.kwargs["recipe_pk"])
@@ -178,8 +190,9 @@ class RatingDeleteView(LoginRequiredMixin, generic.DeleteView):
     template_name = "dishes/form_confirm_delete.html"
 
     def get_success_url(self):
-        return reverse("dishes:recipe-detail", kwargs={"pk": self.object.recipe.pk})
-
+        return reverse(
+            "dishes:recipe-detail", kwargs={"pk": self.object.recipe.pk}
+        )
 
 
 class FavoriteListView(LoginRequiredMixin, generic.ListView):
@@ -187,23 +200,24 @@ class FavoriteListView(LoginRequiredMixin, generic.ListView):
     template_name = "dishes/favorite_list.html"
 
     def get_queryset(self):
-        return (
-            self.request.user.favorites
-            .select_related("cuisine", "author")
-            .order_by("-created_at")
-        )
+        return self.request.user.favorites.select_related(
+            "cuisine", "author"
+        ).order_by("-created_at")
 
 
 class ToggleFavoritesView(LoginRequiredMixin, View):
-
     def get(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.user.favorites.filter(pk=pk).exists():
             request.user.favorites.remove(recipe)
-            messages.info(request, f"Рецепт «{recipe.name}» видалено з обраного")
+            messages.info(
+                request, f"Рецепт «{recipe.name}» видалено з обраного"
+            )
         else:
             request.user.favorites.add(recipe)
-            messages.success(request, f"Рецепт «{recipe.name}» додано до обраного")
+            messages.success(
+                request, f"Рецепт «{recipe.name}» додано до обраного"
+            )
         return redirect("dishes:recipe-detail", pk=pk)
 
 

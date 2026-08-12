@@ -13,17 +13,36 @@ from dishes.models import Cook, Cuisine, Rating, Recipe, Tag
 fake = Faker()
 
 CUISINES = [
-    "Українська", "Італійська", "Японська", "Французька", "Мексиканська",
-    "Китайська", "Індійська", "Грецька", "Тайська", "Грузинська",
+    "Українська",
+    "Італійська",
+    "Японська",
+    "Французька",
+    "Мексиканська",
+    "Китайська",
+    "Індійська",
+    "Грецька",
+    "Тайська",
+    "Грузинська",
 ]
 
 TAGS = [
-    "вегетаріанське", "веганське", "без глютену", "швидке", "святкове",
-    "десерт", "суп", "салат", "гриль", "запіканка", "гостре", "дитяче",
+    "вегетаріанське",
+    "веганське",
+    "без глютену",
+    "швидке",
+    "святкове",
+    "десерт",
+    "суп",
+    "салат",
+    "гриль",
+    "запіканка",
+    "гостре",
+    "дитяче",
 ]
 
 
 SAMPLE_IMAGES_DIR = Path(settings.BASE_DIR) / "sample_image"
+
 
 def get_sample_image():
     files = list(SAMPLE_IMAGES_DIR.glob("*.jpg"))
@@ -63,10 +82,12 @@ class Command(BaseCommand):
         self._create_ratings(opts["ratings"], recipes, cooks)
         self._add_favorites(cooks, recipes)
 
-        self.stdout.write(self.style.SUCCESS(
-            f"Готово! Кухонь: {len(cuisines)}, тегів: {len(tags)}, "
-            f"кухарів: {len(cooks)}, рецептів: {len(recipes)}"
-        ))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Готово! Кухонь: {len(cuisines)}, тегів: {len(tags)}, "
+                f"кухарів: {len(cooks)}, рецептів: {len(recipes)}"
+            )
+        )
 
     def _create_cuisines(self):
         cuisines = []
@@ -153,7 +174,9 @@ class Command(BaseCommand):
                 cook=cook,
                 defaults={
                     "score": random.randint(1, 5),
-                    "comment": fake.sentence() if random.random() < 0.6 else "",
+                    "comment": fake.sentence()
+                    if random.random() < 0.6
+                    else "",
                 },
             )
             if was_created:
@@ -161,5 +184,7 @@ class Command(BaseCommand):
 
     def _add_favorites(self, cooks, recipes):
         for cook in cooks:
-            favorites = random.sample(recipes, k=random.randint(0, min(5, len(recipes))))
+            favorites = random.sample(
+                recipes, k=random.randint(0, min(5, len(recipes)))
+            )
             cook.favorites.set(favorites)

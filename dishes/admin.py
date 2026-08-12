@@ -10,7 +10,10 @@ class CookAdmin(UserAdmin):
         ("Additional info", {"fields": ("bio", "favorites")}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
-        ("Additional info", {"fields": ("first_name", "last_name", "email", "bio")}),
+        (
+            "Additional info",
+            {"fields": ("first_name", "last_name", "email", "bio")},
+        ),
     )
 
     def get_favorite_counts(self, obj):

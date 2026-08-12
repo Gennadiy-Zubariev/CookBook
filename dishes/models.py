@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -39,7 +39,7 @@ class Recipe(models.Model):
     description = models.TextField()
     ingredients = models.TextField()
     instructions = models.TextField()
-    cooking_time = models.PositiveIntegerField(help_text="у хвилинах")
+    cooking_time = models.PositiveIntegerField(help_text="in minutes")
     cuisine = models.ForeignKey(
         Cuisine, on_delete=models.CASCADE, related_name="recipes"
     )
@@ -49,7 +49,9 @@ class Recipe(models.Model):
         related_name="authored_recipes",
     )
     tags = models.ManyToManyField(Tag, related_name="recipes", blank=True)
-    image = models.ImageField(upload_to="dishes/media", null=True, unique=False)
+    image = models.ImageField(
+        upload_to="dishes/media", null=True, unique=False
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -57,14 +59,19 @@ class Recipe(models.Model):
 
     def __str__(self):
         return (
-            f"{self.name} - {self.cuisine} кухня, час приготування {self.cooking_time} хв."
+            f"{self.name} - {self.cuisine} кухня, "
+            f"час приготування {self.cooking_time} хв."
         )
 
 
 class Rating(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name="ratings")
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name="ratings"
+    )
     cook = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="ratings"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="ratings",
     )
     score = models.PositiveIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]

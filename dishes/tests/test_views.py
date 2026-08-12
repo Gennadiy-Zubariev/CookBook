@@ -1,10 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Model
-from django.template import response
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from dishes.models import Recipe, Cuisine, Tag
+from dishes.models import Cuisine, Recipe, Tag
 
 INDEX_URL = reverse("index")
 RECIPE_LIST_URL = reverse("dishes:recipe-list")
@@ -17,7 +15,6 @@ class PublicRecipeListTest(TestCase):
         """Initialize the test client and create sample data."""
         self.client = Client()
 
-        # Створюємо мінімальні дані для index
         user = get_user_model().objects.create_user(
             username="admin", password="test1234"
         )
@@ -51,8 +48,7 @@ class PrivateRecipeTest(TestCase):
         """Create a test user and log them in."""
         self.client = Client()
         self.user = get_user_model().objects.create_user(
-            username="test",
-            password="1111"
+            username="test", password="1111"
         )
         self.client.force_login(self.user)
 
@@ -83,10 +79,7 @@ class PrivateRecipeTest(TestCase):
         response = self.client.get(RECIPE_LIST_URL)
         self.assertEqual(response.status_code, 200)
         recipes = Recipe.objects.all()
-        self.assertEqual(
-            set(response.context["recipe_list"]),
-            set(recipes)
-        )
+        self.assertEqual(set(response.context["recipe_list"]), set(recipes))
 
 
 class PrivateCookTest(TestCase):
@@ -99,12 +92,12 @@ class PrivateCookTest(TestCase):
         )
         self.client.force_login(self.user)
 
-    def test_create_author(self):
+    def test_create_cook(self):
         """Registration form creates a cook with correctly filled fields."""
         form_data = {
             "username": "new_user",
-            "password1": "user123",
-            "password2": "user123",
+            "password1": "user123qwerqwerrerqwer",
+            "password2": "user123qwerqwerrerqwer",
             "first_name": "test_first",
             "last_name": "test_last",
             "bio": "test_bio",
@@ -136,13 +129,18 @@ class ToggleFavoriteTest(TestCase):
             cuisine=self.cuisine,
             author=self.user,
         )
-        self.url = reverse("dishes:toggle-favorite", kwargs={"pk": self.recipe.pk})
+        self.url = reverse(
+            "dishes:toggle-favorite", kwargs={"pk": self.recipe.pk}
+        )
 
     def test_toggle_favorite_add(self):
         """First click adds the recipe to user's favorites."""
         self.client.force_login(self.user)
-        self.assertFalse(self.user.favorites.filter(pk=self.recipe.pk).exists())
-        response = self.client.get(self.url)
+        self.assertFalse(
+            self.user.favorites.filter(pk=self.recipe.pk).exists()
+        )
+        self.client.get(self.url)
+        self.user.refresh_from_db()
         self.assertTrue(self.user.favorites.filter(pk=self.recipe.pk).exists())
 
 
@@ -171,13 +169,11 @@ class TagTest(TestCase):
         """New tag is created in DB and attached to the recipe."""
         self.client.force_login(self.user)
         self.assertEqual(Tag.objects.count(), 0)
-
-        response = self.client.post(self.url, {"name": "гостре"})
+        self.client.post(self.url, {"name": "гостре"})
+        self.recipe.refresh_from_db()
         self.assertEqual(Tag.objects.count(), 1)
-
         tag = Tag.objects.first()
         self.assertEqual(tag.name, "гостре")
-
         self.assertTrue(self.recipe.tags.filter(pk=tag.pk).exists())
 
     def test_add_existing_tag_reuses_it(self):
@@ -226,16 +222,15 @@ class RemoveTagFromRecipeTests(TestCase):
         self.recipe.tags.add(self.tag)
         self.url = reverse(
             "dishes:remove-tag",
-            kwargs={"pk": self.recipe.pk, "tag_pk": self.tag.pk}
+            kwargs={"pk": self.recipe.pk, "tag_pk": self.tag.pk},
         )
 
     def test_author_can_remove_tag(self):
         """Recipe author can remove a tag."""
         self.client.force_login(self.author)
         self.assertTrue(self.recipe.tags.filter(pk=self.tag.pk).exists())
-
-        response = self.client.get(self.url)
-
+        self.client.get(self.url)
+        self.recipe.refresh_from_db()
         self.assertFalse(self.recipe.tags.filter(pk=self.tag.pk).exists())
 
     def test_non_author_cannot_remove_tag(self):

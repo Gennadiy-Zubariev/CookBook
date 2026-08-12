@@ -4,3 +4,6 @@ venv/
 **__pycache__
 media/
 db.sqlite3
+ruff.toml
+.flake8
+.env

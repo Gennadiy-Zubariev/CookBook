@@ -9,11 +9,13 @@ class RatingForm(forms.ModelForm):
         model = Rating
         fields = ["score", "comment"]
         widgets = {
-            "score": forms.NumberInput(attrs={
-                "min": 1,
-                "max": 5,
-                "step": 1,
-            }),
+            "score": forms.NumberInput(
+                attrs={
+                    "min": 1,
+                    "max": 5,
+                    "step": 1,
+                }
+            ),
             "comment": forms.Textarea(attrs={"rows": 3}),
         }
         labels = {
@@ -21,7 +23,12 @@ class RatingForm(forms.ModelForm):
             "comment": "Коментар",
         }
 
+
 class CookCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = Cook
-        fields = UserCreationForm.Meta.fields + ("bio", "first_name", "last_name")
+        fields = UserCreationForm.Meta.fields + (
+            "bio",
+            "first_name",
+            "last_name",
+        )
