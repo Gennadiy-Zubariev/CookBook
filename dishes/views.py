@@ -5,7 +5,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.aggregates import Avg
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views import generic
+from django.views import generic, View
 
 from dishes.forms import RatingForm, CookCreationForm
 from dishes.models import Cuisine, Recipe, Cook, Rating, Tag
@@ -194,48 +194,49 @@ class FavoriteListView(LoginRequiredMixin, generic.ListView):
         )
 
 
-@login_required
-def toggle_favorite(request, pk):
-    recipe = get_object_or_404(Recipe, pk=pk)
-    if request.user.favorites.filter(pk=pk).exists():
-        request.user.favorites.remove(recipe)
-        messages.info(request, f"Рецепт «{recipe.name}» видалено з обраного")
-    else:
-        request.user.favorites.add(recipe)
-        messages.success(request, f"Рецепт «{recipe.name}» додано до обраного")
-    return redirect("dishes:recipe-detail", pk=pk)
+class ToggleFavoritesView(LoginRequiredMixin, View):
 
-
-@login_required
-def add_tag_to_recipe(request, pk):
-    recipe = get_object_or_404(Recipe, pk=pk)
-
-    if request.method == "POST":
-        name = request.POST.get("name", "").strip().lower()
-
-        if name:
-            tag, created = Tag.objects.get_or_create(name=name)
-            recipe.tags.add(tag)
-
-            if created:
-                messages.success(request, f"Тег #{name} створено і додано")
-            else:
-                messages.info(request, f"Тег #{name} додано до рецепта")
+    def get(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if request.user.favorites.filter(pk=pk).exists():
+            request.user.favorites.remove(recipe)
+            messages.info(request, f"Рецепт «{recipe.name}» видалено з обраного")
         else:
-            messages.error(request, "Введіть назву тегу")
-
-    return redirect("dishes:recipe-detail", pk=pk)
-
-
-@login_required
-def remove_tag_from_recipe(request, pk, tag_pk):
-    recipe = get_object_or_404(Recipe, pk=pk)
-
-    if recipe.author != request.user:
-        messages.error(request, "Тільки автор рецепта може прибирати теги")
+            request.user.favorites.add(recipe)
+            messages.success(request, f"Рецепт «{recipe.name}» додано до обраного")
         return redirect("dishes:recipe-detail", pk=pk)
 
-    tag = get_object_or_404(Tag, pk=tag_pk)
-    recipe.tags.remove(tag)
-    messages.info(request, f"Тег #{tag.name} прибрано")
-    return redirect("dishes:recipe-detail", pk=pk)
+
+class AddTagToRecipeView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+
+        if request.method == "POST":
+            name = request.POST.get("name", "").strip().lower()
+
+            if name:
+                tag, created = Tag.objects.get_or_create(name=name)
+                recipe.tags.add(tag)
+
+                if created:
+                    messages.success(request, f"Тег #{name} створено і додано")
+                else:
+                    messages.info(request, f"Тег #{name} додано до рецепта")
+            else:
+                messages.error(request, "Введіть назву тегу")
+
+        return redirect("dishes:recipe-detail", pk=pk)
+
+
+class RemoveTagFromRecipeView(LoginRequiredMixin, View):
+    def get(self, request, pk, tag_pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+
+        if recipe.author != request.user:
+            messages.error(request, "Тільки автор рецепта може прибирати теги")
+            return redirect("dishes:recipe-detail", pk=pk)
+
+        tag = get_object_or_404(Tag, pk=tag_pk)
+        recipe.tags.remove(tag)
+        messages.info(request, f"Тег #{tag.name} прибрано")
+        return redirect("dishes:recipe-detail", pk=pk)

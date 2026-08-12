@@ -12,9 +12,10 @@ from dishes.views import (
     CookCreateView,
     RatingCreateView,
     FavoriteListView,
-    toggle_favorite,
-    add_tag_to_recipe,
-    remove_tag_from_recipe,
+    ToggleFavoritesView,
+    AddTagToRecipeView,
+    RemoveTagFromRecipeView,
+    RatingDeleteView,
 )
 
 
@@ -33,10 +34,13 @@ urlpatterns = [
     path(
         "recipe/<int:recipe_pk>/rate/", RatingCreateView.as_view(), name="rating-create"
     ),
-    path("recipe/<int:pk>/add-tag/", add_tag_to_recipe, name="add-tag"),
-    path("recipe/<int:pk>/remove-tag/<int:tag_pk>/", remove_tag_from_recipe, name="remove-tag"),
+    path(
+        "rating/<int:pk>/delete/", RatingDeleteView.as_view(), name="rating-delete"
+    ),
+    path("recipe/<int:pk>/add-tag/", AddTagToRecipeView.as_view(), name="add-tag"),
+    path("recipe/<int:pk>/remove-tag/<int:tag_pk>/", RemoveTagFromRecipeView.as_view(), name="remove-tag"),
     path("favorites/", FavoriteListView.as_view(), name="favorite-list"),
     path(
-        "favorites/<int:pk>/toggle-favorite/", toggle_favorite, name="toggle-favorite"
+        "favorites/<int:pk>/toggle-favorite/", ToggleFavoritesView.as_view(), name="toggle-favorite"
     ),
 ]
