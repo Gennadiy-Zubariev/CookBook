@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ recipe.name }}{% endblock %}
+
+{% block content %}
+<article class="recipe-article">
+
+  <header class="page-header">
+    <span class="eyebrow">{{ recipe.cuisine.country }} кухня</span>
+    <h1 class="page-title">{{ recipe.name }}</h1>
+
+    <div class="recipe-meta">
+            <span>Автор:
+                <a href="{% url 'dishes:cook-detail' recipe.author.pk %}">
+                    {{ recipe.author.get_full_name|default:recipe.author.username }}
+                </a>
+            </span>
+      <span>·</span>
+      <span>⏱ {{ recipe.cooking_time }} хв</span>
+      <span>·</span>
+      <span>{{ recipe.created_at|date:"d.m.Y" }}</span>
+      {% if avg_score %}
+      <span>·</span>
+      <span class="score">★ {{ avg_score|floatformat:1 }}</span>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if recipe.image %}
+  <div class="card recipe-hero">
+    <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}">
+  </div>
+  {% endif %}
+
+  <section class="page-header">
+    <h3 class="eyebrow">Теги</h3>
+
+    <div class="tag-list">
+      {% for tag in recipe.tags.all %}
+      <span class="tag">
+                    <a href="{% url 'dishes:recipe-list' %}?tag_search_param={{ tag.pk }}">
+                        #{{ tag.name }}
+                    </a>
+                    {% if recipe.author == user %}
+                        <a href="{% url 'dishes:remove-tag' recipe.pk tag.pk %}"
+                           class="tag-remove"
+                           onclick="return confirm('Прибрати тег?');"
+                           title="Прибрати тег">×</a>
+                    {% endif %}
+                </span>
+      {% empty %}
+      <span class="page-subtitle">Тегів поки немає</span>
+      {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'dishes:add-tag' recipe.pk %}" class="tag-form">
+      {% csrf_token %}
+      <input type="text" name="name" placeholder="Додати тег..."
+             maxlength="255" required class="tag-input">
+      <button type="submit" class="btn btn-outline">+ Додати</button>
+    </form>
+    {% endif %}
+  </section>
+
+  <section>
+    <p class="recipe-description">{{ recipe.description }}</p>
+  </section>
+
+  {% if user.is_authenticated %}
+  <div class="recipe-actions">
+    <a href="{% url 'dishes:toggle-favorite' recipe.pk %}"
+       class="btn {% if recipe in user.favorites.all %}btn-primary{% else %}btn-outline{% endif %}">
+      {% if recipe in user.favorites.all %}♥ В обраному{% else %}♡ Додати в обране{% endif %}
+    </a>
+
+    {% if recipe.author == user %}
+    <a href="{% url 'dishes:recipe-update' recipe.pk %}" class="btn btn-outline">Редагувати</a>
+    <a href="{% url 'dishes:recipe-delete' recipe.pk %}" class="btn btn-danger">Видалити</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <section class="grid-2-3">
+    <div class="card recipe-ingredients">
+      <h2>Інгредієнти</h2>
+      <div class="recipe-text">{{ recipe.ingredients }}</div>
+    </div>
+    <div class="recipe-instructions">
+      <h2>Приготування</h2>
+      <div class="recipe-text-lg">{{ recipe.instructions }}</div>
+    </div>
+  </section>
+
+  <section class="ratings-section">
+    <h2 class="section-title">
+      Відгуки
+      {% if recipe.ratings.count %}
+      <span class="section-count">({{ recipe.ratings.count }})</span>
+      {% endif %}
+    </h2>
+
+    {% if user.is_authenticated and can_rate %}
+    <div class="card rating-cta">
+      <p>Оцінили цей рецепт?</p>
+      <a href="{% url 'dishes:rating-create' recipe.pk %}" class="btn btn-primary">Залишити відгук</a>
+    </div>
+    {% endif %}
+
+    {% for rating in recipe.ratings.all %}
+    <div class="rating-item">
+      <div class="rating-header">
+        <div>
+                        <span class="rating-author">
+                            <a href="{% url 'dishes:cook-detail' rating.cook.pk %}">
+                                {{ rating.cook.get_full_name|default:rating.cook.username }}
+                            </a>
+                        </span>
+          <span class="rating-date">{{ rating.created_at|date:"d.m.Y" }}</span>
+        </div>
+        <span class="rating-stars">
+                        {% for _ in "12345"|make_list %}{% if forloop.counter <= rating.score %}★{% else %}☆{% endif %}{% endfor %}
+                    </span>
+      </div>
+      {% if rating.comment %}
+      <p class="rating-comment">{{ rating.comment }}</p>
+      {% endif %}
+      {% if rating.cook == user %}
+      <a href="{% url 'dishes:rating-delete' rating.pk %}" class="rating-delete">Видалити мій відгук</a>
+      {% endif %}
+    </div>
+    {% empty %}
+    <p class="page-subtitle">Ще немає відгуків. Будьте першим!</p>
+    {% endfor %}
+  </section>
+
+</article>
+{% endblock %}

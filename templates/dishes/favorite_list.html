@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Мої обрані{% endblock %}
+
+{% block content %}
+<div class="favorites-wrapper">
+
+  <header class="page-header">
+    <span class="eyebrow">Особисте</span>
+    <h1 class="page-title">Обрані рецепти</h1>
+    <p class="page-subtitle">
+      {% if recipe_list %}
+      {{ recipe_list|length }}
+      {% if recipe_list|length == 1 %}рецепт{% elif recipe_list|length >= 2 and recipe_list|length <= 4 %}рецепти{% else
+      %}рецептів{% endif %}
+      — все, що ви колись збережете, буде тут
+      {% else %}
+      Тут будуть рецепти, які ви позначили як улюблені
+      {% endif %}
+    </p>
+  </header>
+
+  {% if recipe_list %}
+  <div class="grid-3">
+    {% for recipe in recipe_list %}
+    <a href="{% url 'dishes:recipe-detail' recipe.pk %}" class="card recipe-card">
+      <span class="badge-overlay">♥</span>
+
+      <div class="recipe-card-image">
+        {% if recipe.image %}
+        <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}">
+        {% endif %}
+      </div>
+
+      <div class="recipe-card-body">
+        <span class="eyebrow">{{ recipe.cuisine.country }}</span>
+        <h3>{{ recipe.name }}</h3>
+        <p class="recipe-card-description">{{ recipe.description|truncatewords:14 }}</p>
+        <div class="recipe-card-meta">
+          <span>⏱ {{ recipe.cooking_time }} хв</span>
+          <span>{{ recipe.author.username }}</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state-lg">
+    <div class="empty-state-icon">♡</div>
+    <h2 class="empty-state-title">Тут поки порожньо</h2>
+    <p class="empty-state-text">Переглядайте рецепти і натискайте ♡, щоб зберегти їх сюди</p>
+    <a href="{% url 'dishes:recipe-list' %}" class="btn btn-primary">Знайти рецепти</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

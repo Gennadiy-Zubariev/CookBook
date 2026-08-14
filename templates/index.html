@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Головна{% endblock %}
+
+{% block content %}
+
+{% if featured_recipe %}
+<section class="hero">
+  <div class="card hero-image">
+    {% if featured_recipe.image %}
+    <img src="{{ featured_recipe.image.url }}" alt="{{ featured_recipe.name }}">
+    {% endif %}
+  </div>
+
+  <div class="hero-body">
+    <span class="eyebrow">Рецепт дня</span>
+    <h1 class="hero-title">{{ featured_recipe.name }}</h1>
+    <p class="hero-cooking-time">⏱ {{ featured_recipe.cooking_time }} хв.</p>
+    <p class="hero-description">{{ featured_recipe.description|truncatewords:28 }}</p>
+
+    <div class="hero-author">
+      <div>
+                    <span class="hero-author-name">
+                        {{ featured_recipe.author.get_full_name|default:featured_recipe.author.username }}
+                    </span><br>
+        <span class="hero-author-date">{{ featured_recipe.created_at|date:"d.m.Y" }}</span>
+      </div>
+    </div>
+
+    <a href="{% url 'dishes:recipe-detail' featured_recipe.pk %}" class="btn btn-primary hero-cta">
+      Переглянути рецепт
+    </a>
+  </div>
+</section>
+{% endif %}
+
+<section class="popular-section">
+  <h2 class="eyebrow popular-title">Популярні рецепти</h2>
+
+  <div class="grid-3">
+    {% for recipe in popular_recipes %}
+    <a href="{% url 'dishes:recipe-detail' recipe.pk %}" class="card popular-card">
+      {% if recipe.image %}
+      <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}" class="popular-card-image">
+      {% endif %}
+      <div class="popular-card-body">
+        <span class="eyebrow">{{ recipe.cuisine.country }}</span>
+        <h3>{{ recipe.name }}</h3>
+      </div>
+    </a>
+    {% empty %}
+    <p class="page-subtitle">Поки що немає рецептів.</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

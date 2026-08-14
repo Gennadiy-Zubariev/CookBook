@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}До зустрічі{% endblock %}
+
+{% block content %}
+<div class="logout-wrapper">
+
+  <div class="logout-icon">✓</div>
+
+  <h1 class="logout-title">До зустрічі!</h1>
+  <p class="logout-text">
+    Ви успішно вийшли з системи. Приходьте ще — тут завжди тепло, як у бабусиній кухні.
+  </p>
+
+  <div class="logout-actions">
+    <a href="{% url 'login' %}" class="btn btn-primary">Увійти знову</a>
+    <a href="{% url 'index' %}" class="btn btn-outline">На головну</a>
+  </div>
+</div>
+{% endblock %}

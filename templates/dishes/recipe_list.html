@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Усі рецепти{% endblock %}
+
+{% block content %}
+
+<header class="page-header">
+  <h1 class="page-title">Усі рецепти</h1>
+  <p class="page-subtitle">Кількість рецептів — {{ total_count }}</p>
+  <a href="{% url 'dishes:recipe-create' %}" class="btn btn-primary">Створити рецепт</a>
+</header>
+
+<form method="get" class="filter-bar">
+  <input type="text" name="search_param" value="{{ request.GET.search_param }}"
+         placeholder="Пошук за назвою..." class="filter-input">
+
+  <select name="cuisine_search_param" class="filter-select">
+    <option value="">Всі кухні</option>
+    {% for cuisine in cuisines %}
+    <option value="{{ cuisine.pk }}">{{ cuisine.country }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="tag_search_param" class="filter-select">
+    <option value="">Всі теги</option>
+    {% for tag in tags %}
+    <option value="{{ tag.pk }}">{{ tag.name }}</option>
+    {% endfor %}
+  </select>
+
+  <button type="submit" class="btn btn-primary">Шукати</button>
+
+  {% if request.GET.search_param or request.GET.cuisine_search_param or request.GET.tag_search_param %}
+  <a href="{% url 'dishes:recipe-list' %}" class="btn btn-outline">Скинути</a>
+  {% endif %}
+</form>
+
+{% if recipe_list %}
+<div class="grid-3">
+  {% for recipe in recipe_list %}
+  <a href="{% url 'dishes:recipe-detail' recipe.pk %}" class="card recipe-card">
+    <div class="recipe-card-image">
+      {% if recipe.image %}
+      <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}">
+      {% endif %}
+
+      {% if user.is_authenticated and recipe in user.favorites.all %}
+      <span class="badge-overlay">♥ В обраному</span>
+      {% endif %}
+    </div>
+
+    <div class="recipe-card-body">
+      <span class="eyebrow">{{ recipe.cuisine.country }}</span>
+      <h3>{{ recipe.name }}</h3>
+
+      <p class="recipe-card-tags">
+        {% for tag in recipe.tags.all %}#{{ tag }} {% endfor %}
+      </p>
+
+      <p class="recipe-card-description">{{ recipe.description|truncatewords:14 }}</p>
+
+      <div class="recipe-card-meta">
+        <span>⏱ {{ recipe.cooking_time }} хв</span>
+        {% if recipe.avg_score %}
+        <span class="score">★ {{ recipe.avg_score|floatformat:1 }}</span>
+        {% endif %}
+        <span>{{ recipe.author.username }}</span>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+{% if is_paginated %}
+{% include "includes/pagination.html" %}
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+  <p>Нічого не знайдено 🍽</p>
+</div>
+{% endif %}
+
+{% endblock %}

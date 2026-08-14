@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Вхід{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+
+  <header class="auth-header">
+    <span class="eyebrow">Вхід</span>
+    <h1 class="auth-title">З поверненням</h1>
+    <p class="auth-subtitle">
+      Увійдіть, щоб зберігати улюблені рецепти й ділитись своїми
+    </p>
+  </header>
+
+  <form method="post" class="card auth-form">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="form-error-box">
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <div class="form-field">
+      <label for="{{ form.username.id_for_label }}">Логін</label>
+      <input type="text"
+             name="{{ form.username.name }}"
+             id="{{ form.username.id_for_label }}"
+             value="{{ form.username.value|default:'' }}"
+             autofocus
+             required>
+      {% if form.username.errors %}
+      <ul class="errorlist">
+        {% for error in form.username.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    <div class="form-field">
+      <label for="{{ form.password.id_for_label }}">Пароль</label>
+      <input type="password"
+             name="{{ form.password.name }}"
+             id="{{ form.password.id_for_label }}"
+             required>
+      {% if form.password.errors %}
+      <ul class="errorlist">
+        {% for error in form.password.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    {% if next %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary auth-submit">Увійти</button>
+  </form>
+
+  <p class="auth-footer">
+    Ще немає акаунту?
+    <a href="{% url 'dishes:cook-create' %}">Зареєструватись</a>
+  </p>
+</div>
+{% endblock %}
