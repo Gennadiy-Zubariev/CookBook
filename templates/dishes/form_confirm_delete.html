@@ -3,34 +3,27 @@
 {% block title %}Підтвердження видалення{% endblock %}
 
 {% block content %}
-<div style="max-width: 560px; margin: 0 auto;">
+<div class="delete-wrapper">
 
-    <header style="margin-bottom: 24px;">
-        <span class="eyebrow" style="color: var(--clay);">Видалення</span>
-        <h1 style="font-size: 32px; margin-top: 8px;">
-            Видалити «{{ object }}»?
-        </h1>
-    </header>
+  <header class="page-header">
+    <span class="eyebrow eyebrow-danger">Видалення</span>
+    <h1 class="form-title">Видалити «{{ object }}»?</h1>
+  </header>
 
-    <div class="card" style="padding: 24px; margin-bottom: 24px;">
-        <p style="margin: 0; color: var(--ink-soft);">
-            {% block delete_warning %}
-                Ця дія незворотна. Дані буде видалено назавжди.
-            {% endblock %}
-        </p>
+  <div class="card delete-warning">
+    <p>
+      {% block delete_warning %}
+      Ця дія незворотна. Дані буде видалено назавжди.
+      {% endblock %}
+    </p>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-actions" style="border: none; padding-top: 0; margin-top: 0;">
+      <button type="submit" class="btn btn-danger">Так, видалити</button>
+      <a href="javascript:history.back()" class="btn btn-outline">Скасувати</a>
     </div>
-
-    <form method="post">
-        {% csrf_token %}
-
-        <div style="display: flex; gap: 12px;">
-            <button type="submit" class="btn btn-primary" style="background: var(--clay);">
-                Так, видалити
-            </button>
-            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-outline">
-                Скасувати
-            </a>
-        </div>
-    </form>
+  </form>
 </div>
 {% endblock %}

@@ -4,68 +4,56 @@
 {% block title %}Мої обрані{% endblock %}
 
 {% block content %}
-<div style="max-width: 1000px; margin: 0 auto;">
+<div class="favorites-wrapper">
 
-    <header style="margin-bottom: 40px;">
-        <span class="eyebrow">Особисте</span>
-        <h1 style="font-size: 42px; margin-top: 8px;">Обрані рецепти</h1>
-        <p style="color: var(--ink-soft); margin-top: 8px;">
-            {% if recipe_list %}
-                {{ recipe_list|length }}
-                {% if recipe_list|length == 1 %}рецепт{% elif recipe_list|length >= 2 and recipe_list|length <= 4 %}рецепти{% else %}рецептів{% endif %}
-                — все, що ви колись збережете, буде тут
-            {% else %}
-                Тут будуть рецепти, які ви позначили як улюблені
-            {% endif %}
-        </p>
-    </header>
+  <header class="page-header">
+    <span class="eyebrow">Особисте</span>
+    <h1 class="page-title">Обрані рецепти</h1>
+    <p class="page-subtitle">
+      {% if recipe_list %}
+      {{ recipe_list|length }}
+      {% if recipe_list|length == 1 %}рецепт{% elif recipe_list|length >= 2 and recipe_list|length <= 4 %}рецепти{% else
+      %}рецептів{% endif %}
+      — все, що ви колись збережете, буде тут
+      {% else %}
+      Тут будуть рецепти, які ви позначили як улюблені
+      {% endif %}
+    </p>
+  </header>
 
-    {% if recipe_list %}
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
-            {% for recipe in recipe_list %}
-                <a href="{% url 'dishes:recipe-detail' recipe.pk %}" class="card" style="overflow: hidden; display: flex; flex-direction: column; position: relative;">
+  {% if recipe_list %}
+  <div class="grid-3">
+    {% for recipe in recipe_list %}
+    <a href="{% url 'dishes:recipe-detail' recipe.pk %}" class="card recipe-card">
+      <span class="badge-overlay">♥</span>
 
-                    <span style="position: absolute; top: 12px; right: 12px; z-index: 1; background: var(--clay); color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;">
-                        ♥
-                    </span>
+      <div class="recipe-card-image">
+        {% if recipe.image %}
+        <img src="{{ recipe.image.url }}" alt="{{ recipe.name }}">
+        {% endif %}
+      </div>
 
-                    <div style="position: relative; padding-top: 66%; background: var(--line);">
-                        {% if recipe.image %}
-                            <img src="{{ recipe.image.url }}"
-                                 alt="{{ recipe.name }}"
-                                 style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
-                        {% endif %}
-                    </div>
-
-                    <div style="padding: 18px 20px 20px; display: flex; flex-direction: column; flex-grow: 1;">
-                        <span class="eyebrow">{{ recipe.cuisine.country }}</span>
-                        <h3 style="font-size: 18px; margin-top: 6px; margin-bottom: 10px;">{{ recipe.name }}</h3>
-
-                        <p style="font-size: 13px; color: var(--ink-soft); margin: 0 0 14px; flex-grow: 1;">
-                            {{ recipe.description|truncatewords:14 }}
-                        </p>
-
-                        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--ink-soft); padding-top: 12px; border-top: 1px solid var(--line);">
-                            <span>⏱ {{ recipe.cooking_time }} хв</span>
-                            <span>{{ recipe.author.username }}</span>
-                        </div>
-                    </div>
-                </a>
-            {% endfor %}
+      <div class="recipe-card-body">
+        <span class="eyebrow">{{ recipe.cuisine.country }}</span>
+        <h3>{{ recipe.name }}</h3>
+        <p class="recipe-card-description">{{ recipe.description|truncatewords:14 }}</p>
+        <div class="recipe-card-meta">
+          <span>⏱ {{ recipe.cooking_time }} хв</span>
+          <span>{{ recipe.author.username }}</span>
         </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
 
-    {% else %}
-        <div style="text-align: center; padding: 80px 20px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);">
-            <div style="font-size: 48px; margin-bottom: 16px;">♡</div>
-            <h2 style="font-size: 20px; margin-bottom: 8px;">Тут поки порожньо</h2>
-            <p style="color: var(--ink-soft); margin-bottom: 24px; font-size: 14px;">
-                Переглядайте рецепти і натискайте ♡, щоб зберегти їх сюди
-            </p>
-            <a href="{% url 'dishes:recipe-list' %}" class="btn btn-primary">
-                Знайти рецепти
-            </a>
-        </div>
-    {% endif %}
+  {% else %}
+  <div class="empty-state-lg">
+    <div class="empty-state-icon">♡</div>
+    <h2 class="empty-state-title">Тут поки порожньо</h2>
+    <p class="empty-state-text">Переглядайте рецепти і натискайте ♡, щоб зберегти їх сюди</p>
+    <a href="{% url 'dishes:recipe-list' %}" class="btn btn-primary">Знайти рецепти</a>
+  </div>
+  {% endif %}
 
 </div>
 {% endblock %}

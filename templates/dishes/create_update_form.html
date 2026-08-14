@@ -1,59 +1,61 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if object %}Редагувати{% else %}Створити{% endif %}
+{% if object %}Редагувати{% else %}Створити{% endif %}
 {% endblock %}
 
 {% block content %}
-<div style="max-width: 720px; margin: 0 auto;">
+<div class="form-wrapper">
 
-    <header style="margin-bottom: 32px;">
+  <header class="form-header">
         <span class="eyebrow">
             {% if object %}Редагування{% else %}Створення{% endif %}
         </span>
-        <h1 style="font-size: 36px; margin-top: 8px;">
-            {% block form_title %}
-                {% if object %}{{ object }}{% else %}Новий запис{% endif %}
-            {% endblock %}
-        </h1>
-    </header>
+    <h1 class="form-title">
+      {% block form_title %}
+      {% if object %}{{ object }}{% else %}Новий запис{% endif %}
+      {% endblock %}
+    </h1>
+  </header>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
 
-        {% if form.non_field_errors %}
-            <div style="padding: 12px; background: #fde8e0; border: 1px solid var(--clay); border-radius: var(--radius); margin-bottom: 20px;">
-                {{ form.non_field_errors }}
-            </div>
-        {% endif %}
+    {% if form.non_field_errors %}
+    <div class="form-error-box">
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
 
-        {% for field in form %}
-            <div class="form-field">
-                <label for="{{ field.id_for_label }}">
-                    {{ field.label }}
-                    {% if field.field.required %}<span style="color: var(--clay);">*</span>{% endif %}
-                </label>
+    {% for field in form %}
+    <div class="form-field">
+      <label for="{{ field.id_for_label }}">
+        {{ field.label }}
+        {% if field.field.required %}<span class="required-mark">*</span>{% endif %}
+      </label>
 
-                {{ field }}
+      {{ field }}
 
-                {% if field.help_text %}
-                    <div class="helptext">{{ field.help_text }}</div>
-                {% endif %}
+      {% if field.help_text %}
+      <div class="helptext">{{ field.help_text }}</div>
+      {% endif %}
 
-                {% if field.errors %}
-                    <ul class="errorlist">
-                        {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
+      {% if field.errors %}
+      <ul class="errorlist">
+        {% for error in field.errors %}
+        <li>{{ error }}</li>
         {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+    {% endfor %}
 
-        <div style="display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line);">
-            <button type="submit" class="btn btn-primary">
-                {% if object %}Зберегти зміни{% else %}Створити{% endif %}
-            </button>
-            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-outline">Скасувати</a>
-        </div>
-    </form>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        {% if object %}Зберегти зміни{% else %}Створити{% endif %}
+      </button>
+      <a href="javascript:history.back()" class="btn btn-outline">Скасувати</a>
+    </div>
+  </form>
 </div>
 {% endblock %}

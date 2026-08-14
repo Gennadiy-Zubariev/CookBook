@@ -4,20 +4,18 @@
 {% block title %}До зустрічі{% endblock %}
 
 {% block content %}
-<div style="max-width: 480px; margin: 80px auto; text-align: center;">
+<div class="logout-wrapper">
 
-    <div style="font-family: 'Fraunces', serif; font-size: 48px; color: var(--moss); margin-bottom: 16px;">
-        ✓
-    </div>
+  <div class="logout-icon">✓</div>
 
-    <h1 style="font-size: 32px; margin-bottom: 12px;">До зустрічі!</h1>
-    <p style="color: var(--ink-soft); font-size: 15px; margin-bottom: 32px;">
-        Ви успішно вийшли з системи. Приходьте ще — тут завжди тепло, як у бабусиній кухні.
-    </p>
+  <h1 class="logout-title">До зустрічі!</h1>
+  <p class="logout-text">
+    Ви успішно вийшли з системи. Приходьте ще — тут завжди тепло, як у бабусиній кухні.
+  </p>
 
-    <div style="display: flex; gap: 12px; justify-content: center;">
-        <a href="{% url 'login' %}" class="btn btn-primary">Увійти знову</a>
-        <a href="{% url 'index' %}" class="btn btn-outline">На головну</a>
-    </div>
+  <div class="logout-actions">
+    <a href="{% url 'login' %}" class="btn btn-primary">Увійти знову</a>
+    <a href="{% url 'index' %}" class="btn btn-outline">На головну</a>
+  </div>
 </div>
 {% endblock %}
