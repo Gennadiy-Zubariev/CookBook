@@ -1,13 +1,11 @@
+bash
 #!/usr/bin/env bash
 set -o errexit
 
 pip install -r requirements.txt
-
 python manage.py collectstatic --no-input
-
 python manage.py migrate
 
-# Seed only if database is empty
 python manage.py shell -c "
 from dishes.models import Recipe
 if not Recipe.objects.exists():

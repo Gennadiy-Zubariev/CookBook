@@ -2,7 +2,6 @@ import os
 
 from .base import *
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ALLOWED_HOSTS = ["cookbook-pkvb.onrender.com"]
@@ -21,3 +20,17 @@ DATABASES = {
         "PORT": int(os.getenv("POSTGRES_DB_PORT", "5432")),
     }
 }
+
+# Cloudinary
+INSTALLED_APPS += [
+    "cloudinary",
+    "cloudinary_storage",
+]
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"

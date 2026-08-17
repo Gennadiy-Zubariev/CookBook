@@ -1,10 +1,15 @@
 asgiref==3.12.1
+certifi==2026.7.22
+charset-normalizer==3.5.1
+cloudinary==1.45.0
 Django==6.0.7
+django-cloudinary-storage==0.3.0
 django-debug-toolbar==7.0.0
 django-extensions==4.1
 Faker==40.36.0
 flake8==7.3.0
 gunicorn==26.0.0
+idna==3.18
 iniconfig==2.3.0
 mccabe==0.7.0
 packaging==26.3
@@ -19,6 +24,9 @@ pygraphviz==2.0.1
 pyparsing==3.3.2
 pytest==9.1.1
 python-dotenv==1.2.2
+requests==2.34.2
 ruff==0.16.1
+six==1.17.0
 sqlparse==0.5.5
+urllib3==2.7.0
 whitenoise==6.12.0
