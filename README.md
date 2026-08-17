@@ -269,5 +269,5 @@ The project uses a custom CSS design system with a warm, editorial aesthetic:
 
 After running `seed_db`:
 
-- **Admin**: `admin` / `admin123`
+- **Admin**: `user` / `user`
 - **Test users**: `cook1`–`cook10` / `password123`
