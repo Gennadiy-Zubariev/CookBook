@@ -1,7 +1,7 @@
 # 🍳 Cookbook
 
 ##Check it out
-[CookBook_project_deployed_to_render](https://cookbook.render.com/)
+https://cookbook-zzif.onrender.com/
 
 A Django web application for sharing and discovering recipes. Users can create recipes, rate dishes from other cooks,
 organize content with tags, and build a personal collection of favorite recipes.
