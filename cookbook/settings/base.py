@@ -15,10 +15,15 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+load_dotenv(BASE_DIR / ".env")
+
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-@_=2@p)*8osqe1q4-tuj$+*f%l_cdtsvhd8*%4ql4ef&7aoe4b",
+)
 
 # Save download files
 MEDIA_ROOT = BASE_DIR / "media"
@@ -31,15 +36,6 @@ MEDIA_URL = "/media/"
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
-    "SECRET_KEY",
-    "django-insecure-@_=2@p)*8osqe1q4-tuj$+*f%l_cdtsvhd8*%4ql4ef&7aoe4b",
-)
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
-
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 
 # Application definition
@@ -64,10 +60,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar"]
-    MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
-    INTERNAL_IPS = ["127.0.0.1"]
 
 ROOT_URLCONF = "cookbook.urls"
 
@@ -91,13 +83,6 @@ WSGI_APPLICATION = "cookbook.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
 
 
 # Password validation
