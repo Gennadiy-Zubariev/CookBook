@@ -9,10 +9,18 @@ python manage.py shell -c "
 from django.core.management import call_command
 call_command('seed_db', flush=True)
 
-# Перевірка що Cloudinary працює
 from dishes.models import Recipe
 r = Recipe.objects.first()
 if r and r.image:
     print('Image URL:', r.image.url)
-    print('Image name:', r.image.name)
 "
+
+#python manage.py shell -c "
+#from dishes.models import Recipe
+#if not Recipe.objects.exists():
+#    from django.core.management import call_command
+#    call_command('seed_db')
+#    print('Database seeded!')
+#else:
+#    print('Skipping seed - database has data')
+#"
