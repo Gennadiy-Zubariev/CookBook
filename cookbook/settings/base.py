@@ -22,7 +22,7 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv(
     "SECRET_KEY",
-    "django-insecure-@_=2@p)*8osqe1q4-tuj$+*f%l_cdtsvhd8*%4ql4ef&7aoe4b",
+    "your_secret_key",
 )
 
 # Save download files
